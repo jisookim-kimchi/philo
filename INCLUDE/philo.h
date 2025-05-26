@@ -44,3 +44,12 @@ typedef struct s_philo
 t_table *init_table(int ac, char **av);
 t_philo	*init_philo(t_table *table);
 void	init_threads(t_table *table);
+
+//utils.c
+void	blocking_time(time_t ms);
+time_t	get_ms_time();
+
+
+//thread_routine.c
+void	*routine(void *arg);
+void	think(t_philo *philo);

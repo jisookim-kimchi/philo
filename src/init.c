@@ -62,7 +62,7 @@ void	init_threads(t_table *table)
 	i = 0;
 	while (i < table->philo_num)
 	{
-		//pthread_create(&table->philos[i].thread, NULL, routine, (void *)table->philos[i]);
+		pthread_create(&table->philos[i].thread, NULL, routine, (void *)&table->philos[i]);
 		i++;
 	}
 }
@@ -74,7 +74,7 @@ void	join_threads(t_table *table)
 	i = 0;
 	while (i < table->philo_num)
 	{
-		//pthread_join(&table->philos[i].thread, NULL, routine, (void *)table->philos[i]);
+		pthread_join(&table->philos[i].thread, NULL);
 		i++;
 	}
 }
