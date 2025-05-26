@@ -2,7 +2,7 @@
 
 /*
 	arguments 
-	numger of philos, time_to_die, time_to_eat, time_to_sleep, number_of_times_each_philosopher_must_eat
+	numger of philos, time_to_die, time_to_eat, time_to_sleep, must_eat_counts
 */
 
 int	main(int ac, char **av)

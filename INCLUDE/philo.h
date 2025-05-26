@@ -23,6 +23,7 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	state_mutex;
+	unsigned int	must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
 }	t_table;
