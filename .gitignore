@@ -3,3 +3,4 @@ obj/
 philo.dSYM
 .DS_Store
 test.c
+.vscode/

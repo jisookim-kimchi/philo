@@ -54,3 +54,27 @@ t_philo	*init_philo(t_table *table)
 	}
 	return philos;
 }
+
+void	init_threads(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->philo_num)
+	{
+		//pthread_create(&table->philos[i].thread, NULL, routine, (void *)table->philos[i]);
+		i++;
+	}
+}
+
+void	join_threads(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->philo_num)
+	{
+		//pthread_join(&table->philos[i].thread, NULL, routine, (void *)table->philos[i]);
+		i++;
+	}
+}

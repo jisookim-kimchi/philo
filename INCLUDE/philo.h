@@ -40,3 +40,7 @@ typedef struct s_philo
 	t_table			*table;
 }	t_philo;
 
+//init.c
+t_table *init_table(int ac, char **av);
+t_philo	*init_philo(t_table *table);
+void	init_threads(t_table *table);
