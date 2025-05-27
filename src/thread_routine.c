@@ -14,8 +14,9 @@ void	think(t_philo *philo)
 	pthread_mutex_unlock(&table->print_mutex);
 	blocking_time(time_to_think);
 
+	//issue
 	//pthread_mutex_lock(&table->state_mutex);
-	philo->state = EATING_RUNNING;
+	//philo->state = EATING_RUNNING;
 	//pthread_mutex_unlock(&table->state_mutex);
 }
 
@@ -36,6 +37,7 @@ void	eat(t_philo *philo)
 		pthread_mutex_lock(philo->left_fork);
 		printf(ORANGE"%ld %d has taken forks\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
 	}
+
 	pthread_mutex_lock(&table->print_mutex);
 	pthread_mutex_unlock(&table->print_mutex);
 	pthread_mutex_lock(&table->state_mutex);
@@ -44,8 +46,8 @@ void	eat(t_philo *philo)
 
 	pthread_mutex_lock(&table->print_mutex);
 	printf(GREEN"%ld %d is eating\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
-	blocking_time(table->time_to_eat);
 	pthread_mutex_unlock(&table->print_mutex);
+	blocking_time(table->time_to_eat);
 	philo->eat_counts++;
 	
 	//fork put down
@@ -86,20 +88,33 @@ void	*philo_routine(void *arg)
             break;  // 안전하게 종료
         }
         pthread_mutex_unlock(&table->state_mutex);
-		if (philo->state == THINKING_READY)
-		{
-			think(philo);
-		}
-		else if (philo->state == EATING_RUNNING)
-		{
-			eat(philo);
-		}
-		else if (philo->state == SLEEPING_BLOCKED)
-		{
-			philo_sleep(philo);
-		}
+		/*
+			if (has two forks)
+			{
+				eating
+				sleeping
+			}
+			else
+				continue;
+		*/
+		// if (philo->state == THINKING_READY)
+		// {
+		// 	think(philo);
+		// }
+		// else if (philo->state == EATING_RUNNING)
+		// {
+		// 	eat(philo);
+		// }
+		// else if (philo->state == SLEEPING_BLOCKED)
+		// {
+		// 	philo_sleep(philo);
+		// }
 		//allfree!
 		//thread_died();
 	}
 	return (NULL);
 }
+
+// eating -> sleep
+
+// wakeup(sleep) -> think
