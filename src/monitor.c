@@ -20,7 +20,7 @@ void	*monitor_routine(void *arg)
 				table->philos[i].state = DIED_TERMINATE;
 				table->someone_died = true;
 				pthread_mutex_unlock(&table->state_mutex);
-
+				//okay
 				pthread_mutex_lock(&table->print_mutex);
 				printf(RED" %ld, time to die : %ld %d is died\n"DEFAULT, get_ms_time() - table->philos[i].last_meal_time, time_to_die, table->philos[i].id);
 				pthread_mutex_unlock(&table->print_mutex);
