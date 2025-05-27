@@ -20,26 +20,39 @@ void	think(t_philo *philo)
 	//pthread_mutex_unlock(&table->state_mutex);
 }
 
-void	eat(t_philo *philo)
+void	try_take_forks(t_philo *philo)
 {
-	t_table *table;
+	t_table	*table;
 
 	table = philo->table;
 	if (philo->id % 2 == 0)
 	{
 		pthread_mutex_lock(philo->left_fork);
 		pthread_mutex_lock(philo->right_fork);
-		printf(ORANGE"%ld %d has taken forks\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
 	}
 	else
 	{
 		pthread_mutex_lock(philo->right_fork);
 		pthread_mutex_lock(philo->left_fork);
-		printf(ORANGE"%ld %d has taken forks\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
 	}
-
 	pthread_mutex_lock(&table->print_mutex);
+	printf(ORANGE"%ld %d has taken forks\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
 	pthread_mutex_unlock(&table->print_mutex);
+}
+
+void	putdown_fokrs(t_philo *philo)
+{
+	//fork put down
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+}
+
+void	eat(t_philo *philo)
+{
+	t_table *table;
+
+	table = philo->table;
+	
 	pthread_mutex_lock(&table->state_mutex);
 	philo->last_meal_time = get_ms_time();
 	pthread_mutex_unlock(&table->state_mutex);
@@ -49,11 +62,6 @@ void	eat(t_philo *philo)
 	pthread_mutex_unlock(&table->print_mutex);
 	blocking_time(table->time_to_eat);
 	philo->eat_counts++;
-	
-	//fork put down
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-
 	//pthread_mutex_lock(&table->state_mutex);
 	philo->state = SLEEPING_BLOCKED;
 	//pthread_mutex_unlock(&table->state_mutex);
@@ -77,40 +85,26 @@ void	philo_sleep(t_philo *philo)
 void	*philo_routine(void *arg)
 {
 	t_philo *philo = (t_philo *)arg;
-	t_table *table = philo->table;
 
 	while (1)
 	{
-		pthread_mutex_lock(&table->state_mutex);
-        if (table->someone_died)
-        {
-            pthread_mutex_unlock(&table->state_mutex);
-            break;  // 안전하게 종료
-        }
-        pthread_mutex_unlock(&table->state_mutex);
 		/*
-			if (has two forks)
-			{
-				eating
-				sleeping
-			}
-			else
-				continue;
+			set_state (think);
+			try_take_forks(philo);
+			set_state(eating);
+			eat();
+			putdown_forks(philo);
+			set_state(sleeping);
+			sleep(philo);
 		*/
-		// if (philo->state == THINKING_READY)
-		// {
-		// 	think(philo);
-		// }
-		// else if (philo->state == EATING_RUNNING)
-		// {
-		// 	eat(philo);
-		// }
-		// else if (philo->state == SLEEPING_BLOCKED)
-		// {
-		// 	philo_sleep(philo);
-		// }
-		//allfree!
-		//thread_died();
+		philo->state = THINKING_READY;
+		try_take_forks(philo);
+		philo->state = EATING_RUNNING;
+		eat(philo);
+		putdown_fokrs(philo);
+		philo->state = SLEEPING_BLOCKED;
+		philo_sleep(philo);
+		think(philo);
 	}
 	return (NULL);
 }
