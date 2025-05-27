@@ -5,6 +5,13 @@
 #include <stdbool.h>
 #include <pthread.h>
 
+#define YELLOW  "\033[0;33m"
+#define	ORANGE  "\033[38;5;214m"
+#define GREEN   "\033[0;32m"
+#define BLUE    "\033[0;34m"
+#define RED     "\033[0;31m" 
+#define DEFAULT   "\033[0m"
+
 typedef enum e_state
 {
 	DIED_TERMINATE = 0,
@@ -23,9 +30,11 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	state_mutex;
+
 	unsigned int	must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
+	pthread_t		monitor; 
 }	t_table;
 
 typedef struct s_philo
@@ -40,16 +49,24 @@ typedef struct s_philo
 	t_table			*table;
 }	t_philo;
 
+//main.c
+int	main(int ac, char **av);
+
 //init.c
 t_table *init_table(int ac, char **av);
 t_philo	*init_philo(t_table *table);
 void	init_threads(t_table *table);
+void	join_threads(t_table *table);
 
 //utils.c
 void	blocking_time(time_t ms);
 time_t	get_ms_time();
 
-
 //thread_routine.c
-void	*routine(void *arg);
+void	*philo_routine(void *arg);
 void	think(t_philo *philo);
+void	philo_sleep(t_philo *philo);
+void	eat(t_philo *philo);
+
+//monitor.c
+void	*monitor_routine(void *arg);

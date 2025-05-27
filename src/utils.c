@@ -17,7 +17,7 @@ void	blocking_time(time_t ms)
 	time_t	start;
 
 	start = get_ms_time();
-	while (get_ms_Time() - start < ms)
+	while (get_ms_time() - start < ms)
 		usleep(100);
 }
 
