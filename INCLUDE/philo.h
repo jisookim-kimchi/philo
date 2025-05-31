@@ -14,11 +14,11 @@
 
 typedef enum e_state
 {
-	DIED_TERMINATE = 0,
+	THINKING_READY,
+	HUNGRY,
 	EATING_RUNNING,
 	SLEEPING_BLOCKED,
-	THINKING_READY,
-}	e_state;
+}	t_state;
 
 typedef struct s_table
 {
@@ -30,7 +30,7 @@ typedef struct s_table
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	state_mutex;
-
+	pthread_mutex_t someone_died_mutex;
 	unsigned int	must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
@@ -41,11 +41,13 @@ typedef struct s_philo
 {
 	pthread_t		thread;
 	time_t			last_meal_time;
+	pthread_mutex_t	meal_mutex;
 	unsigned int	id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	unsigned int	eat_counts;
-	e_state			state;
+	t_state			state;
+	pthread_mutex_t state_mutex;
 	t_table			*table;
 }	t_philo;
 

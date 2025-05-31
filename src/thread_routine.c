@@ -1,48 +1,58 @@
 #include "philo.h"
 
+void	set_philo_state (t_philo *philo, t_state state)
+{
+	pthread_mutex_lock(&philo->state_mutex);
+	philo->state = state;
+	pthread_mutex_unlock(&philo->state_mutex);
+}
+
+t_state	get_philo_state(t_philo *philo)
+{
+	t_state	state;
+
+	pthread_mutex_lock(&philo->state_mutex);
+	state = philo->state;
+	pthread_mutex_unlock(&philo->state_mutex);
+	return (state);
+}
 void	think(t_philo *philo)
 {
 	t_table *table;
-	time_t	time_to_think;
 
 	table = philo->table;
-	time_to_think = table->time_to_die - (table->time_to_eat + table->time_to_sleep);
-	if (time_to_think < 0)
-		time_to_think = 0;
+	set_philo_state(philo, THINKING_READY);
 	pthread_mutex_lock(&table->print_mutex);
 	printf(YELLOW"%ld %d is thinking\n"DEFAULT, get_ms_time() - table->start_time, philo->id); 
 	pthread_mutex_unlock(&table->print_mutex);
-	blocking_time(time_to_think);
-
-	//issue
-	//pthread_mutex_lock(&table->state_mutex);
-	//philo->state = EATING_RUNNING;
-	//pthread_mutex_unlock(&table->state_mutex);
 }
 
 void	try_take_forks(t_philo *philo)
 {
-	t_table	*table;
+	int	left_fork_num = philo->id;
+	int	right_fork_num;
 
-	table = philo->table;
-	if (philo->id % 2 == 0)
+	left_fork_num = philo->id;
+	right_fork_num = (philo->id + 1) % philo->table->philo_num;
+
+	if (left_fork_num < right_fork_num)
 	{
 		pthread_mutex_lock(philo->left_fork);
+		printf("%ld %d has taken left fork\n", get_ms_time()- philo->table->start_time, philo->id);
 		pthread_mutex_lock(philo->right_fork);
+		printf("%ld %d has taken right fork\n", get_ms_time()- philo->table->start_time, philo->id);
 	}
 	else
 	{
 		pthread_mutex_lock(philo->right_fork);
+		printf("%ld %d has taken right fork\n", get_ms_time()- philo->table->start_time, philo->id);
 		pthread_mutex_lock(philo->left_fork);
+		printf("%ld %d has taken left fork\n", get_ms_time()- philo->table->start_time, philo->id);
 	}
-	pthread_mutex_lock(&table->print_mutex);
-	printf(ORANGE"%ld %d has taken forks\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
-	pthread_mutex_unlock(&table->print_mutex);
 }
 
 void	putdown_fokrs(t_philo *philo)
 {
-	//fork put down
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
 }
@@ -52,19 +62,14 @@ void	eat(t_philo *philo)
 	t_table *table;
 
 	table = philo->table;
-	
-	pthread_mutex_lock(&table->state_mutex);
+	set_philo_state(philo, EATING_RUNNING);
+	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal_time = get_ms_time();
-	pthread_mutex_unlock(&table->state_mutex);
-
-	pthread_mutex_lock(&table->print_mutex);
-	printf(GREEN"%ld %d is eating\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
-	pthread_mutex_unlock(&table->print_mutex);
-	blocking_time(table->time_to_eat);
 	philo->eat_counts++;
-	//pthread_mutex_lock(&table->state_mutex);
-	philo->state = SLEEPING_BLOCKED;
-	//pthread_mutex_unlock(&table->state_mutex);
+	pthread_mutex_unlock(&philo->meal_mutex);
+
+	printf(GREEN"%ld %d is eating\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
+	blocking_time(table->time_to_eat);
 }
 
 void	philo_sleep(t_philo *philo)
@@ -72,43 +77,25 @@ void	philo_sleep(t_philo *philo)
 	t_table *table;
 
 	table = philo->table;
+	set_philo_state(philo, SLEEPING_BLOCKED);
 	pthread_mutex_lock(&table->print_mutex);
 	printf(BLUE"%ld %d is sleeping\n"DEFAULT, get_ms_time() - table->start_time, philo->id);
 	pthread_mutex_unlock(&table->print_mutex);
 	blocking_time(table->time_to_sleep);
-
-	//pthread_mutex_lock(&table->state_mutex);
-	philo->state = THINKING_READY;
-	//pthread_mutex_unlock(&table->state_mutex);
 }
 
-void	*philo_routine(void *arg)
+void	*philo_routine(void *data)
 {
-	t_philo *philo = (t_philo *)arg;
+	t_philo *philo = (t_philo *)data;
 
 	while (1)
 	{
-		/*
-			set_state (think);
-			try_take_forks(philo);
-			set_state(eating);
-			eat();
-			putdown_forks(philo);
-			set_state(sleeping);
-			sleep(philo);
-		*/
-		philo->state = THINKING_READY;
 		try_take_forks(philo);
-		philo->state = EATING_RUNNING;
 		eat(philo);
 		putdown_fokrs(philo);
-		philo->state = SLEEPING_BLOCKED;
 		philo_sleep(philo);
 		think(philo);
 	}
 	return (NULL);
 }
 
-// eating -> sleep
-
-// wakeup(sleep) -> think
