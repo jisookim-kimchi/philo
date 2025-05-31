@@ -23,10 +23,8 @@ bool	is_full(t_philo *philo)
 	if (table->must_eat_counts == -1)
 		return (full);
 	pthread_mutex_lock(&philo->meal_mutex);
-	full = (int)philo->eat_counts >= table->must_eat_counts;
-	printf(RED"philo : %d , eat_cnt : %d , must eat : %d\n"DEFAULT, philo->id, philo->eat_counts, table->must_eat_counts);
+	full = ((int)philo->eat_counts >= table->must_eat_counts);
 	pthread_mutex_unlock(&philo->meal_mutex);
-
 	return full;
 }
 
@@ -61,20 +59,20 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		i = 0;
+		pthread_mutex_lock(&table->philos[i].meal_mutex);
+		time_t last_meal = table->philos[i].last_meal_time;
+		pthread_mutex_unlock(&table->philos[i].meal_mutex);
 		while(i < table->philo_num)
 		{
-			pthread_mutex_lock(&table->philos[i].meal_mutex);
-			time_t last_meal = table->philos[i].last_meal_time;
-			pthread_mutex_unlock(&table->philos[i].meal_mutex);
-			if (get_ms_time() - last_meal > time_to_die)
+			if (get_ms_time() - last_meal >= time_to_die)
 			{
+				pthread_mutex_lock(&table->print_mutex);
+				printf("%ld %d died\n", get_ms_time() - table->start_time, table->philos[i].id);
+				pthread_mutex_unlock(&table->print_mutex);
+
 				pthread_mutex_lock(&table->someone_died_mutex);
 				table->someone_died = true;
 				pthread_mutex_unlock(&table->someone_died_mutex);
-
-				pthread_mutex_lock(&table->print_mutex);
-				printf(RED" %ld, time_to_die : %ld %d is died\n"DEFAULT, get_ms_time() - table->philos[i].last_meal_time, table->time_to_die, table->philos[i].id);
-				pthread_mutex_unlock(&table->print_mutex);
 				return NULL;
 			}
 			i++;
@@ -84,6 +82,7 @@ void	*monitor_routine(void *arg)
 		{
 			break;
 		}
+		usleep(1000);
 	}
 	return (NULL);
 }

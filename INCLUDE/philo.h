@@ -63,6 +63,9 @@ void	join_threads(t_table *table);
 //utils.c
 void	blocking_time(time_t ms, t_table *table);
 time_t	get_ms_time();
+void	safe_print(t_table *table, int id, const char *s, long time);
+t_state	get_philo_state(t_philo *philo);
+void	set_philo_state (t_philo *philo, t_state state);
 
 //thread_routine.c
 void	*philo_routine(void *arg);
@@ -71,8 +74,7 @@ bool	try_take_forks(t_philo *philo);
 void	putdown_forks(t_philo *philo);
 void	eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
-t_state	get_philo_state(t_philo *philo);
-void	set_philo_state (t_philo *philo, t_state state);
+
 
 //monitor.c
 void	*monitor_routine(void *arg);

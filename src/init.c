@@ -15,7 +15,7 @@ t_table *init_table(int ac, char **av)
 	if (pthread_mutex_init(&table->someone_died_mutex, NULL) != 0)
 		return (NULL);
 	table->someone_died = false;
-	table->start_time = get_ms_time();
+	//table->start_time = get_ms_time();
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	if (!table->forks)
 		return (NULL);
@@ -52,6 +52,7 @@ t_philo	*init_philo(t_table *table)
 		philos[i].id = i;
 		philos[i].table = table;
 		philos[i].eat_counts = 0;
+		philos[i].last_meal_time = 0;
 		if (pthread_mutex_init(&philos[i].meal_mutex, NULL) != 0)
 			return (NULL);
 		if (pthread_mutex_init(&philos[i].state_mutex, NULL) != 0)
