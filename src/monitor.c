@@ -1,10 +1,60 @@
 #include "philo.h"
 
+bool	is_someone_dead(t_table *table)
+{
+	bool	check;
+
+	check = false;
+	pthread_mutex_lock(&table->someone_died_mutex);
+	check = table->someone_died;
+	pthread_mutex_unlock(&table->someone_died_mutex);
+	if (check)
+		check = true;
+	return (check);
+}
+
+bool	is_full(t_philo *philo)
+{
+	t_table	*table;
+	bool	full;
+
+	full = false;
+	table = philo->table;
+	if (table->must_eat_counts == -1)
+		return (full);
+	pthread_mutex_lock(&philo->meal_mutex);
+	full = (int)philo->eat_counts >= table->must_eat_counts;
+	printf(RED"philo : %d , eat_cnt : %d , must eat : %d\n"DEFAULT, philo->id, philo->eat_counts, table->must_eat_counts);
+	pthread_mutex_unlock(&philo->meal_mutex);
+
+	return full;
+}
+
+int	check_stuffed_cnts(t_table *table)
+{
+	int	i;
+	int	stuffed_cnts;
+
+	stuffed_cnts = 0;
+	i = 0;
+	while (i < table->philo_num)
+	{
+		pthread_mutex_lock(&table->philos[i].meal_mutex);
+		if (table->philos[i].eat_counts >= table->must_eat_counts)
+		{
+			stuffed_cnts++;
+		}
+		pthread_mutex_unlock(&table->philos[i].meal_mutex);
+		i++;
+	}
+	return (stuffed_cnts);
+}
+
 void	*monitor_routine(void *arg)
 {
 	t_table *table;
 	time_t time_to_die;
-	unsigned int	i;
+	int	i;
 
 	table = (t_table *) arg;
 	time_to_die = table->time_to_die;
@@ -18,18 +68,22 @@ void	*monitor_routine(void *arg)
 			pthread_mutex_unlock(&table->philos[i].meal_mutex);
 			if (get_ms_time() - last_meal > time_to_die)
 			{
-				pthread_mutex_lock(&table->state_mutex);
+				pthread_mutex_lock(&table->someone_died_mutex);
 				table->someone_died = true;
-				pthread_mutex_unlock(&table->state_mutex);
+				pthread_mutex_unlock(&table->someone_died_mutex);
 
 				pthread_mutex_lock(&table->print_mutex);
-				printf(RED" %ld, time to die : %ld %d is died\n"DEFAULT, get_ms_time() - table->philos[i].last_meal_time, time_to_die, table->philos[i].id);
+				printf(RED" %ld, time_to_die : %ld %d is died\n"DEFAULT, get_ms_time() - table->philos[i].last_meal_time, table->time_to_die, table->philos[i].id);
 				pthread_mutex_unlock(&table->print_mutex);
 				return NULL;
 			}
 			i++;
 		}
-		usleep(100);
+		int cnts = check_stuffed_cnts(table);
+		if (cnts == table->philo_num)
+		{
+			break;
+		}
 	}
 	return (NULL);
 }

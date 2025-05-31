@@ -3,7 +3,7 @@
 t_table *init_table(int ac, char **av)
 {
 	t_table			*table;
-	unsigned int	i;
+	int	i;
 
 	i = 0;
 	table = malloc(sizeof(t_table));
@@ -66,7 +66,7 @@ t_philo	*init_philo(t_table *table)
 
 void	init_threads(t_table *table)
 {
-	unsigned int	i;
+	int	i;
 
 	i = 0;
 	while (i < table->philo_num)
@@ -78,7 +78,7 @@ void	init_threads(t_table *table)
 
 void	join_threads(t_table *table)
 {
-	unsigned int	i;
+	int	i;
 
 	i = 0;
 	while (i < table->philo_num)

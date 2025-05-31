@@ -12,12 +12,16 @@ time_t	get_ms_time()
 }
 
 //Accurate thread blocking for a given time
-void	blocking_time(time_t ms)
+void	blocking_time(time_t ms, t_table *table)
 {
 	time_t	start;
 
 	start = get_ms_time();
 	while (get_ms_time() - start < ms)
+	{
+		if (is_someone_dead(table))
+			return;
 		usleep(100);
+	}
 }
 

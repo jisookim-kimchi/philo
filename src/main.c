@@ -8,7 +8,7 @@
 int	main(int ac, char **av)
 {
 	t_table	*table;
-	unsigned int i;
+	int i;
 
 	i = 0;
 	if (ac != 5 && ac != 6)
@@ -22,8 +22,8 @@ int	main(int ac, char **av)
 	}
 	pthread_create(&table->monitor, NULL, monitor_routine, (void *)table);
 	init_threads(table);
-	join_threads(table);
 	pthread_join(table->monitor, NULL);
+	join_threads(table);
 	
 	return (0);
 }

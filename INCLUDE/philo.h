@@ -22,7 +22,7 @@ typedef enum e_state
 
 typedef struct s_table
 {
-	unsigned int	philo_num;
+	int	philo_num;
 	time_t			time_to_die;
 	time_t			time_to_sleep;
 	time_t			time_to_eat;
@@ -31,7 +31,7 @@ typedef struct s_table
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t	state_mutex;
 	pthread_mutex_t someone_died_mutex;
-	unsigned int	must_eat_counts;
+	int				must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
 	pthread_t		monitor; 
@@ -45,7 +45,7 @@ typedef struct s_philo
 	unsigned int	id;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	unsigned int	eat_counts;
+	int	eat_counts;
 	t_state			state;
 	pthread_mutex_t state_mutex;
 	t_table			*table;
@@ -61,14 +61,20 @@ void	init_threads(t_table *table);
 void	join_threads(t_table *table);
 
 //utils.c
-void	blocking_time(time_t ms);
+void	blocking_time(time_t ms, t_table *table);
 time_t	get_ms_time();
 
 //thread_routine.c
 void	*philo_routine(void *arg);
 void	think(t_philo *philo);
-void	philo_sleep(t_philo *philo);
+bool	try_take_forks(t_philo *philo);
+void	putdown_forks(t_philo *philo);
 void	eat(t_philo *philo);
+void	philo_sleep(t_philo *philo);
+t_state	get_philo_state(t_philo *philo);
+void	set_philo_state (t_philo *philo, t_state state);
 
 //monitor.c
 void	*monitor_routine(void *arg);
+bool	is_full(t_philo *philo);
+bool	is_someone_dead(t_table *table);
