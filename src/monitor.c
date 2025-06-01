@@ -8,8 +8,6 @@ bool	is_someone_dead(t_table *table)
 	pthread_mutex_lock(&table->someone_died_mutex);
 	check = table->someone_died;
 	pthread_mutex_unlock(&table->someone_died_mutex);
-	if (check)
-		check = true;
 	return (check);
 }
 
@@ -35,6 +33,9 @@ int	check_stuffed_cnts(t_table *table)
 
 	stuffed_cnts = 0;
 	i = 0;
+
+	if (table->must_eat_counts == -1)
+		return (0);
 	while (i < table->philo_num)
 	{
 		pthread_mutex_lock(&table->philos[i].meal_mutex);
@@ -59,17 +60,16 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		i = 0;
-		pthread_mutex_lock(&table->philos[i].meal_mutex);
-		time_t last_meal = table->philos[i].last_meal_time;
-		pthread_mutex_unlock(&table->philos[i].meal_mutex);
+		
 		while(i < table->philo_num)
 		{
+			pthread_mutex_lock(&table->philos[i].meal_mutex);
+			printf("monitor check table->philo[i] : %p\n", &table->philos[i]);
+			time_t last_meal = table->philos[i].last_meal_time;
+			pthread_mutex_unlock(&table->philos[i].meal_mutex);
 			if (get_ms_time() - last_meal >= time_to_die)
 			{
-				pthread_mutex_lock(&table->print_mutex);
-				printf("%ld %d died\n", get_ms_time() - table->start_time, table->philos[i].id);
-				pthread_mutex_unlock(&table->print_mutex);
-
+				safe_print(table, table->philos[i].id, RED"died\n"DEFAULT, get_ms_time()- table->start_time);
 				pthread_mutex_lock(&table->someone_died_mutex);
 				table->someone_died = true;
 				pthread_mutex_unlock(&table->someone_died_mutex);

@@ -92,6 +92,7 @@ void	eat(t_philo *philo)
 
 	pthread_mutex_lock(&philo->meal_mutex);
 	philo->last_meal_time = get_ms_time();
+	printf("philos : %p\n", philo);
 	philo->eat_counts++;
 	pthread_mutex_unlock(&philo->meal_mutex);
 	safe_print(table, philo->id, GREEN"is eating"DEFAULT,  get_ms_time() - table->start_time);
@@ -120,7 +121,6 @@ void	*philo_routine(void *data)
 
 	while (!is_someone_dead(table) && !is_full(philo))
 	{
-		think(philo);
 		if (!try_take_forks(philo))
 		{
 			continue;
@@ -134,6 +134,7 @@ void	*philo_routine(void *data)
 		}
 		putdown_forks(philo);
 		philo_sleep(philo);
+		think(philo);
 	}
 	return (NULL);
 }

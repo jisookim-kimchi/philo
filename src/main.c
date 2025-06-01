@@ -24,6 +24,5 @@ int	main(int ac, char **av)
 	init_threads(table);
 	pthread_join(table->monitor, NULL);
 	join_threads(table);
-	
 	return (0);
 }
