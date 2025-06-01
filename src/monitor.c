@@ -49,13 +49,15 @@ int	check_stuffed_cnts(t_table *table)
 	return (stuffed_cnts);
 }
 
-void	*monitor_routine(void *arg)
+void	*monitor_routine(void *data)
 {
 	t_table *table;
 	time_t time_to_die;
 	int	i;
+	int	cnts;
 
-	table = (t_table *) arg;
+	cnts = 0;
+	table = (t_table *) data;
 	time_to_die = table->time_to_die;
 	while (1)
 	{
@@ -75,7 +77,7 @@ void	*monitor_routine(void *arg)
 			}
 			i++;
 		}
-		int cnts = check_stuffed_cnts(table);
+		cnts = check_stuffed_cnts(table);
 		if (cnts == table->philo_num)
 		{
 			break;

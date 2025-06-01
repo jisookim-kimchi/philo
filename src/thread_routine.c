@@ -12,7 +12,6 @@ void	think(t_philo *philo)
 	}
 	set_philo_state(philo, THINKING_READY);
 	safe_print(table, philo->id, YELLOW"is thinking"DEFAULT, get_ms_time() - table->start_time);
-	//blocking_time(table->time_to_die - (table->time_to_eat + table->time_to_sleep), table);
 }
 
 bool	try_take_forks(t_philo *philo)

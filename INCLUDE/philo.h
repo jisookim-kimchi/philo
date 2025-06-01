@@ -11,6 +11,9 @@
 #define BLUE    "\033[0;34m"
 #define RED     "\033[0;31m" 
 #define DEFAULT   "\033[0m"
+#define ERROR	-1
+#define	INT_MAX	2147483647
+#define INT_MIN	-2147483648
 
 typedef enum e_state
 {
@@ -22,33 +25,32 @@ typedef enum e_state
 
 typedef struct s_table
 {
-	int	philo_num;
+	int				philo_num;
 	time_t			time_to_die;
 	time_t			time_to_sleep;
 	time_t			time_to_eat;
 	time_t			start_time;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print_mutex;
-	pthread_mutex_t	state_mutex;
 	pthread_mutex_t someone_died_mutex;
 	int				must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
-	pthread_t		monitor; 
+	pthread_t		monitor;
 }	t_table;
 
 typedef struct s_philo
 {
+	t_table			*table;
 	pthread_t		thread;
 	time_t			last_meal_time;
-	pthread_mutex_t	meal_mutex;
 	unsigned int	id;
+	int				eat_counts;
+	t_state			state;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
-	int	eat_counts;
-	t_state			state;
+	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t state_mutex;
-	t_table			*table;
 }	t_philo;
 
 //main.c
@@ -68,15 +70,18 @@ t_state	get_philo_state(t_philo *philo);
 void	set_philo_state (t_philo *philo, t_state state);
 
 //thread_routine.c
-void	*philo_routine(void *arg);
+void	*philo_routine(void *data);
 void	think(t_philo *philo);
 bool	try_take_forks(t_philo *philo);
 void	putdown_forks(t_philo *philo);
 void	eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
 
-
 //monitor.c
-void	*monitor_routine(void *arg);
+void	*monitor_routine(void *data);
 bool	is_full(t_philo *philo);
 bool	is_someone_dead(t_table *table);
+
+//parsing.c
+bool	is_valid(int ac, char **av);
+int		ft_atoi(char *str);

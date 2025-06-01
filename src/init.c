@@ -7,15 +7,14 @@ t_table *init_table(int ac, char **av)
 
 	i = 0;
 	table = malloc(sizeof(t_table));
-	table->philo_num = atoi(av[1]);
-	if (pthread_mutex_init(&table->state_mutex, NULL) != 0)
+	if (!table)
 		return (NULL);
+	table->philo_num = ft_atoi(av[1]);
 	if (pthread_mutex_init(&table->print_mutex, NULL) != 0)
 		return (NULL);
 	if (pthread_mutex_init(&table->someone_died_mutex, NULL) != 0)
 		return (NULL);
 	table->someone_died = false;
-	//table->start_time = get_ms_time();
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	if (!table->forks)
 		return (NULL);
@@ -24,11 +23,11 @@ t_table *init_table(int ac, char **av)
 		pthread_mutex_init(&table->forks[i], NULL);
 		i++;
 	}
-	table->time_to_die = atoi(av[2]);
-	table->time_to_eat = atoi(av[3]);
-	table->time_to_sleep = atoi(av[4]);
+	table->time_to_die = ft_atoi(av[2]);
+	table->time_to_eat = ft_atoi(av[3]);
+	table->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
-		table->must_eat_counts = atoi(av[5]);
+		table->must_eat_counts = ft_atoi(av[5]);
 	else
 		table->must_eat_counts = -1;
 	table->philos = init_philo(table);
@@ -68,11 +67,20 @@ t_philo	*init_philo(t_table *table)
 void	init_threads(t_table *table)
 {
 	int	i;
+	int	result;
 
 	i = 0;
 	while (i < table->philo_num)
 	{
-		pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
+		result = pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
+		if (!result)
+		{
+			while (--i >= 0)
+			{
+				pthread_join(table->philos[i].thread, NULL);
+			}
+			return result;
+		}
 		i++;
 	}
 }

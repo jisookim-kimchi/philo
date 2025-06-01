@@ -11,9 +11,17 @@ int	main(int ac, char **av)
 	int i;
 
 	i = 0;
-	if (ac != 5 && ac != 6)
+	if (!is_valid(ac, av))
+	{
+		printf(RED"INVALID ARGUMENTS\n"DEFAULT);
 		return (-1);
+	}
 	table = init_table(ac, av);
+	if (table == NULL)
+	{
+		all_free(table);
+		return (-1);
+	}
 	table->start_time = get_ms_time();
 	while (i < table->philo_num)
 	{
@@ -24,5 +32,6 @@ int	main(int ac, char **av)
 	init_threads(table);
 	pthread_join(table->monitor, NULL);
 	join_threads(table);
+	//all_free(table);
 	return (0);
 }
