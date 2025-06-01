@@ -60,11 +60,9 @@ void	*monitor_routine(void *arg)
 	while (1)
 	{
 		i = 0;
-		
 		while(i < table->philo_num)
 		{
 			pthread_mutex_lock(&table->philos[i].meal_mutex);
-			printf("monitor check table->philo[i] : %p\n", &table->philos[i]);
 			time_t last_meal = table->philos[i].last_meal_time;
 			pthread_mutex_unlock(&table->philos[i].meal_mutex);
 			if (get_ms_time() - last_meal >= time_to_die)
