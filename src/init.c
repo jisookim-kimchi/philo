@@ -12,15 +12,20 @@ t_table *init_table(int ac, char **av)
 	table->philo_num = ft_atoi(av[1]);
 	if (pthread_mutex_init(&table->print_mutex, NULL) != 0)
 		return (NULL);
+	else
+		table->print_mutex_flag = true;
 	if (pthread_mutex_init(&table->someone_died_mutex, NULL) != 0)
 		return (NULL);
+	else
+		table->someone_died_mutex_flag = true;
 	table->someone_died = false;
 	table->forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
 	if (!table->forks)
 		return (NULL);
 	while (i < table->philo_num)
 	{
-		pthread_mutex_init(&table->forks[i], NULL);
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+			return (NULL);
 		i++;
 	}
 	table->time_to_die = ft_atoi(av[2]);
@@ -54,8 +59,12 @@ t_philo	*init_philo(t_table *table)
 		philos[i].last_meal_time = 0;
 		if (pthread_mutex_init(&philos[i].meal_mutex, NULL) != 0)
 			return (NULL);
+		else
+			philos[i].meal_mutex_flag = true;
 		if (pthread_mutex_init(&philos[i].state_mutex, NULL) != 0)
 			return (NULL);
+		else
+			philos[i].state_mutex_flag = true;
 		philos[i].left_fork = &table->forks[i];
 		philos[i].right_fork = &table->forks[(i + 1) % num];
 		philos[i].state = THINKING_READY;

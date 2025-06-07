@@ -11,8 +11,10 @@ void	all_free(t_table *table)
 	{
 		while(i < table->philo_num)
 		{
-			pthread_mutex_destroy(&table->philos[i].meal_mutex);
-			pthread_mutex_destroy(&table->philos[i].state_mutex);
+			if (table->philos[i].meal_mutex_flag)
+				pthread_mutex_destroy(&table->philos[i].meal_mutex);
+			if (table->philos[i].state_mutex_flag)
+				pthread_mutex_destroy(&table->philos[i].state_mutex);
 			i++;
 		}
 		free(table->philos);
@@ -26,9 +28,9 @@ void	all_free(t_table *table)
 		}
 		free(table->forks);
 	}
-	//if (&table->someone_died_mutex)
+	if (&table->someone_died_mutex)
 		pthread_mutex_destory(&table->someone_died_mutex);
-	//if (&table->print_mutex)
+	if (&table->print_mutex)
 		pthread_mutex_destory(&table->print_mutex);
 	free(table);
 }
