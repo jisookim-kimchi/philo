@@ -17,7 +17,7 @@ int	main(int ac, char **av)
 		return (-1);
 	}
 	table = init_table(ac, av);
-	if (table == NULL)
+	if (!table)
 	{
 		all_free(table);
 		return (-1);
@@ -32,6 +32,6 @@ int	main(int ac, char **av)
 	init_threads(table);
 	pthread_join(table->monitor, NULL);
 	join_threads(table);
-	//all_free(table);
+	all_free(table);
 	return (0);
 }

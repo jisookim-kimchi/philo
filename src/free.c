@@ -21,16 +21,20 @@ void	all_free(t_table *table)
 	}
 	if (table->forks)
 	{
+		i = 0;
 		while (i < table->philo_num)
 		{
-			pthread_mutex_destroy(&table->forks[i]);
+			if (table->forks_mutex_flag[i])
+				pthread_mutex_destroy(&table->forks[i]);
 			i++;
 		}
 		free(table->forks);
 	}
-	if (&table->someone_died_mutex)
-		pthread_mutex_destory(&table->someone_died_mutex);
-	if (&table->print_mutex)
-		pthread_mutex_destory(&table->print_mutex);
+	if (table->forks_mutex_flag)
+		free(table->forks_mutex_flag);
+	if (table->someone_died_mutex_flag)
+		pthread_mutex_destroy(&table->someone_died_mutex);
+	if (table->print_mutex_flag)
+		pthread_mutex_destroy(&table->print_mutex);
 	free(table);
 }

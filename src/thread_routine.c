@@ -7,7 +7,7 @@ void	think(t_philo *philo)
 	table = philo->table;
 	if (is_someone_dead(table))
 	{
-		printf(RED"someone died\n"DEFAULT);
+		//printf(RED"someone died\n"DEFAULT);
 		return ;
 	}
 	set_philo_state(philo, THINKING_READY);
@@ -25,7 +25,7 @@ bool	try_take_forks(t_philo *philo)
 
 	if (is_someone_dead(table))
 	{
-		printf(RED"someone died\n"DEFAULT);
+		//printf(RED"someone died\n"DEFAULT);
         return (false);
 	}
 	if (left_fork_num < right_fork_num)
@@ -33,7 +33,7 @@ bool	try_take_forks(t_philo *philo)
 		pthread_mutex_lock(philo->left_fork);
 		if (is_someone_dead(table))
 		{
-			printf(RED"someone died\n"DEFAULT);
+			//printf(RED"someone died\n"DEFAULT);
 			pthread_mutex_unlock(philo->left_fork);
 			return (false);
 		}
@@ -41,7 +41,7 @@ bool	try_take_forks(t_philo *philo)
 		pthread_mutex_lock(philo->right_fork);
 		if (is_someone_dead(table))
 		{
-			printf(RED"someone died\n"DEFAULT);
+			//printf(RED"someone died\n"DEFAULT);
 			pthread_mutex_unlock(philo->left_fork);
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
@@ -53,7 +53,7 @@ bool	try_take_forks(t_philo *philo)
 		pthread_mutex_lock(philo->right_fork);
 		if (is_someone_dead(table))
 		{
-			printf(RED"someone died\n"DEFAULT);
+			//printf(RED"someone died\n"DEFAULT);
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
 		}
@@ -61,7 +61,7 @@ bool	try_take_forks(t_philo *philo)
 		pthread_mutex_lock(philo->left_fork);
 		if (is_someone_dead(table))
 		{
-			printf(RED"someone died\n"DEFAULT);
+			//printf(RED"someone died\n"DEFAULT);
 			pthread_mutex_unlock(philo->left_fork);
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
@@ -84,7 +84,7 @@ void	eat(t_philo *philo)
 	table = philo->table;
 	if (is_someone_dead(table))
 	{
-		printf(RED"someone died\n"DEFAULT);
+		//printf(RED"someone died\n"DEFAULT);
 		return;
 	}
 	set_philo_state(philo, EATING_RUNNING);
@@ -124,6 +124,7 @@ void	*philo_routine(void *data)
 		think(philo);
 		if (!try_take_forks(philo))
 		{
+			usleep(100);
 			continue;
 		}
 		eat(philo);

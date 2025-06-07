@@ -37,6 +37,9 @@ typedef struct s_table
 	bool			someone_died;
 	struct s_philo	*philos;
 	pthread_t		monitor;
+	bool			print_mutex_flag;
+	bool			someone_died_mutex_flag;
+	bool			*forks_mutex_flag;
 }	t_table;
 
 typedef struct s_philo
@@ -51,6 +54,8 @@ typedef struct s_philo
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	meal_mutex;
 	pthread_mutex_t state_mutex;
+	bool			meal_mutex_flag;
+	bool			state_mutex_flag;
 }	t_philo;
 
 //main.c
@@ -85,3 +90,6 @@ bool	is_someone_dead(t_table *table);
 //parsing.c
 bool	is_valid(int ac, char **av);
 int		ft_atoi(char *str);
+
+//free.c
+void	all_free(t_table *table);
