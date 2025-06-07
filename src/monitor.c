@@ -69,7 +69,7 @@ void	*monitor_routine(void *data)
 			pthread_mutex_unlock(&table->philos[i].meal_mutex);
 			if (get_ms_time() - last_meal >= time_to_die)
 			{
-				safe_print(table, table->philos[i].id, RED"died\n"DEFAULT, get_ms_time()- table->start_time);
+				safe_print(table, table->philos[i].id, RED"monitor said : died\n"DEFAULT, get_ms_time()- table->start_time);
 				pthread_mutex_lock(&table->someone_died_mutex);
 				table->someone_died = true;
 				pthread_mutex_unlock(&table->someone_died_mutex);

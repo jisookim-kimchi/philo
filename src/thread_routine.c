@@ -7,7 +7,7 @@ void	think(t_philo *philo)
 	table = philo->table;
 	if (is_someone_dead(table))
 	{
-		//printf(RED"someone died\n"DEFAULT);
+		printf(RED"someone died\n"DEFAULT);
 		return ;
 	}
 	set_philo_state(philo, THINKING_READY);
@@ -24,9 +24,12 @@ bool	try_take_forks(t_philo *philo)
 	right_fork_num = (philo->id + 1) % philo->table->philo_num;
 
 	if (is_someone_dead(table))
-	{
-		//printf(RED"someone died\n"DEFAULT);
         return (false);
+	// 오른쪽 포크가 왼쪽 포크랑 같은 mutex lock 할 이유없음.
+	if (philo->right_fork == philo->left_fork)
+	{
+		safe_print(table, philo->id, "has taken right fork", get_ms_time() - table->start_time);
+		return false;
 	}
 	if (left_fork_num < right_fork_num)
 	{
@@ -37,7 +40,7 @@ bool	try_take_forks(t_philo *philo)
 			pthread_mutex_unlock(philo->left_fork);
 			return (false);
 		}
-		safe_print(table, philo->id, "has taken the left fork",  get_ms_time() - table->start_time);
+		safe_print(table, philo->id, "has taken the left fork", get_ms_time() - table->start_time);
 		pthread_mutex_lock(philo->right_fork);
 		if (is_someone_dead(table))
 		{
@@ -136,7 +139,6 @@ void	*philo_routine(void *data)
 		}
 		putdown_forks(philo);
 		philo_sleep(philo);
-		
 	}
 	return (NULL);
 }

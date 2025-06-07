@@ -74,6 +74,9 @@ void	safe_print(t_table *table, int id, const char *s, long time);
 t_state	get_philo_state(t_philo *philo);
 void	set_philo_state (t_philo *philo, t_state state);
 
+//philo_single.c
+void	*philo_single(void *data);
+
 //thread_routine.c
 void	*philo_routine(void *data);
 void	think(t_philo *philo);

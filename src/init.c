@@ -101,6 +101,13 @@ void	init_threads(t_table *table)
 	int	result;
 
 	i = 0;
+	if (table->philo_num == 1)
+	{
+		result = pthread_create(&table->philos[i].thread, NULL, philo_single, (void *)&table->philos[i]);
+		if (result)
+			pthread_join(table->philos[i].thread, NULL);
+		return ;
+	}
 	while (i < table->philo_num)
 	{
 		result = pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
