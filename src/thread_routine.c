@@ -11,7 +11,7 @@ void	think(t_philo *philo)
 		return ;
 	}
 	set_philo_state(philo, THINKING_READY);
-	safe_print(table, philo->id, YELLOW"is thinking"DEFAULT, get_ms_time() - table->start_time);
+	safe_print(table, philo->id + 1, YELLOW"is thinking"DEFAULT, get_ms_time() - table->start_time);
 }
 
 bool	try_take_forks(t_philo *philo)
@@ -28,7 +28,7 @@ bool	try_take_forks(t_philo *philo)
 	// 오른쪽 포크가 왼쪽 포크랑 같은 mutex lock 할 이유없음.
 	if (philo->right_fork == philo->left_fork)
 	{
-		safe_print(table, philo->id, "has taken right fork", get_ms_time() - table->start_time);
+		safe_print(table, philo->id + 1, "has taken right fork", get_ms_time() - table->start_time);
 		return false;
 	}
 	if (left_fork_num < right_fork_num)
@@ -40,7 +40,7 @@ bool	try_take_forks(t_philo *philo)
 			pthread_mutex_unlock(philo->left_fork);
 			return (false);
 		}
-		safe_print(table, philo->id, "has taken the left fork", get_ms_time() - table->start_time);
+		safe_print(table, philo->id + 1, "has taken the left fork", get_ms_time() - table->start_time);
 		pthread_mutex_lock(philo->right_fork);
 		if (is_someone_dead(table))
 		{
@@ -49,7 +49,7 @@ bool	try_take_forks(t_philo *philo)
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
 		}
-		safe_print(table, philo->id, "has taken the right fork",  get_ms_time() - table->start_time);
+		safe_print(table, philo->id + 1, "has taken the right fork",  get_ms_time() - table->start_time);
 	}
 	else
 	{
@@ -60,7 +60,7 @@ bool	try_take_forks(t_philo *philo)
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
 		}
-		safe_print(table, philo->id, "has taken the right fork",  get_ms_time() - table->start_time);
+		safe_print(table, philo->id + 1, "has taken the right fork",  get_ms_time() - table->start_time);
 		pthread_mutex_lock(philo->left_fork);
 		if (is_someone_dead(table))
 		{
@@ -69,7 +69,7 @@ bool	try_take_forks(t_philo *philo)
 			pthread_mutex_unlock(philo->right_fork);
 			return (false);
 		}
-		safe_print(table, philo->id, "has taken the left fork", get_ms_time() - table->start_time);
+		safe_print(table, philo->id + 1, "has taken the left fork", get_ms_time() - table->start_time);
 	}
 	return (true);
 }
@@ -96,7 +96,7 @@ void	eat(t_philo *philo)
 	philo->last_meal_time = get_ms_time();
 	philo->eat_counts++;
 	pthread_mutex_unlock(&philo->meal_mutex);
-	safe_print(table, philo->id, GREEN"is eating"DEFAULT,  get_ms_time() - table->start_time);
+	safe_print(table, philo->id + 1, GREEN"is eating"DEFAULT,  get_ms_time() - table->start_time);
 	blocking_time(table->time_to_eat, table);
 }
 
@@ -111,7 +111,7 @@ void	philo_sleep(t_philo *philo)
 		return ;
 	}
 	set_philo_state(philo, SLEEPING_BLOCKED);
-	safe_print(table, philo->id, BLUE"is sleeping"DEFAULT,  get_ms_time() - table->start_time);
+	safe_print(table, philo->id + 1, BLUE"is sleeping"DEFAULT,  get_ms_time() - table->start_time);
 	blocking_time(table->time_to_sleep, table);
 }
 
@@ -134,7 +134,7 @@ void	*philo_routine(void *data)
 		if (is_full(philo))
 		{
 			putdown_forks(philo);
-			safe_print(table, philo->id, RED"im full\n"DEFAULT,  get_ms_time() - table->start_time);
+			safe_print(table, philo->id + 1, RED"im full\n"DEFAULT,  get_ms_time() - table->start_time);
 			break;
 		}
 		putdown_forks(philo);
