@@ -21,9 +21,6 @@ void	*philo_single(void *data)
 			usleep(500);
 			continue;
 		}
-		eat(philo);
-		putdown_forks(philo);
-		philo_sleep(philo);
 	}
 	return (NULL);
 }
