@@ -3,10 +3,10 @@
 void	safe_print(t_table *table, int id, const char *s, long time)
 {
 	pthread_mutex_lock(&table->print_mutex);
-	if (!is_someone_dead(table))
-	{
+	// if (!is_someone_dead(table))
+	// {
 		printf("%ld %d %s\n", time, id, s);
-	}
+	//}
 	pthread_mutex_unlock(&table->print_mutex);
 }
 
@@ -26,13 +26,14 @@ void	blocking_time(time_t ms, t_table *table)
 {
 	time_t	start;
 
+	(void)table;
 	start = get_ms_time();
 	while (get_ms_time() - start < ms)
 	{
 		if (is_someone_dead(table))
 		{
-			printf(RED"someone died\n"DEFAULT);
-			return;
+		 	printf(RED"someone died\n"DEFAULT);
+		 	return;
 		}
 		usleep(100);
 	}
