@@ -1,13 +1,19 @@
 #include "philo.h"
 
-bool	is_someone_dead(t_table *table)
+bool	is_someone_dead(t_philo *philo)
 {
 	bool	check;
+	t_table *table;
 
+	table = philo->table;
 	check = false;
-	pthread_mutex_lock(&table->shutdown_mutex);
-	check = table->someone_died;
-	pthread_mutex_unlock(&table->shutdown_mutex);
+	if (get_ms_time() - philo->last_meal_time >= table->time_to_die)
+	{
+		pthread_mutex_lock(&table->shutdown_mutex);
+		check = table->someone_died;
+		safe_print(philo, philo->id, "died\n", get_ms_time()-table->start_time);
+		pthread_mutex_unlock(&table->shutdown_mutex);
+	}
 	return (check);
 }
 
@@ -49,38 +55,13 @@ int	check_stuffed_cnts(t_table *table)
 	return (stuffed_cnts);
 }
 
-void	*monitor_routine(void *data)
+int	should_stop(t_philo *philo)
 {
-	t_table *table;
-	time_t time_to_die;
-	int	i;
-	int	cnts;
-
-	cnts = 0;
-	table = (t_table *) data;
-	time_to_die = table->time_to_die;
-	while (1)
-	{
-		i = 0;
-		while(i < table->philo_num)
-		{
-			time_t last_meal = table->philos[i].last_meal_time;
-			if (get_ms_time() - last_meal >= time_to_die)
-			{
-				safe_print(table, table->philos[i].id, RED"monitor said : died\n"DEFAULT, get_ms_time()- table->start_time);
-				pthread_mutex_lock(&table->shutdown_mutex);
-				table->someone_died = true;
-				pthread_mutex_unlock(&table->shutdown_mutex);
-				return NULL;
-			}
-			i++;
-		}
-		cnts = check_stuffed_cnts(table);
-		if (cnts == table->philo_num)
-		{
-			break;
-		}
-		usleep(1000);
-	}
-	return (NULL);
+	if (is_someone_dead(philo) == true)
+		return 1;
+	else if (is_full(philo) == true)
+		return 1;
+	else if (check_stuffed_cnts(philo->table))
+		return 1;
+	return 0;
 }

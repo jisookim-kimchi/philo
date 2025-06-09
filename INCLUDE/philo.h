@@ -29,11 +29,13 @@ typedef struct s_table
 	pthread_mutex_t	print_mutex;
 	pthread_mutex_t shutdown_mutex;
 	pthread_mutex_t eat_mutex;
+	pthread_mutex_t	monitor;
+	bool			monitor_flag;
 	bool			eat_mutex_flag;
 	bool			print_mutex_flag;
 	bool			shut_down_mutex_flag;
 	bool			*forks_mutex_flag;
-	pthread_t		monitor;
+
 }	t_table;
 
 typedef struct s_philo
@@ -62,7 +64,7 @@ void	join_threads(t_table *table);
 //utils.c
 void	blocking_time(time_t ms, t_table *table);
 time_t	get_ms_time();
-void	safe_print(t_table *table, int id, const char *s, long time);
+void	safe_print(t_philo *philo, int id, const char *s, long long time);
 // t_state	get_philo_state(t_philo *philo);
 // void	set_philo_state (t_philo *philo, t_state state);
 
@@ -79,9 +81,10 @@ void	philo_sleep(t_philo *philo);
 int		putdown_onefork(pthread_mutex_t *fork1);
 
 //monitor.c
-void	*monitor_routine(void *data);
+// void	*monitor_routine(void *data);
+int		should_stop(t_philo *philo);
 bool	is_full(t_philo *philo);
-bool	is_someone_dead(t_table *table);
+bool	is_someone_dead(t_philo *philo);
 
 //parsing.c
 bool	is_valid(int ac, char **av);

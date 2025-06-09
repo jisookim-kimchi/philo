@@ -9,12 +9,12 @@ void	*philo_single(void *data)
 	table = philo->table;
 	while (1)
 	{
-		if (is_someone_dead(table))
+		if (is_someone_dead(philo))
 		{
 			printf(RED" %lld im died\n"DEFAULT,get_ms_time() -table->start_time);
 			break;
 		}
-		safe_print(table, philo->id, "think", get_ms_time() - table->start_time);
+		safe_print(philo, philo->id, "think", get_ms_time() - table->start_time);
 		usleep(200);
 		if (!try_take_forks(philo))
 		{

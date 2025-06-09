@@ -26,5 +26,7 @@ void	all_free(t_table *table)
 		pthread_mutex_destroy(&table->shutdown_mutex);
 	if (table->print_mutex_flag)
 		pthread_mutex_destroy(&table->print_mutex);
+	if (table->monitor_flag)
+		pthread_mutex_destroy(&table->monitor);
 	free(table);
 }

@@ -30,9 +30,7 @@ int	main(int ac, char **av)
 		all_free(table);
 		return -1;
 	}
-	pthread_create(&table->monitor, NULL, monitor_routine, (void *)table);
 	init_threads(table);
-	pthread_join(table->monitor, NULL);
 	join_threads(table);
 	all_free(table);
 	return (0);

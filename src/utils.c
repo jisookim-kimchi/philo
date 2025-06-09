@@ -10,20 +10,22 @@
 // 	pthread_mutex_unlock(&table->print_mutex);
 // }
 
-void	safe_print(t_table *table, int id, const char *s, long time)
+void	safe_print(t_philo *philo, int id, const char *s, long long time)
 {
-	pthread_mutex_lock(&table->print_mutex);
-	if (!is_someone_dead(table))
-		printf("%ld %d %s\n", time, id, s);
-	pthread_mutex_unlock(&table->print_mutex);
+	pthread_mutex_lock(&philo->table->print_mutex);
+	if (!is_someone_dead(philo))
+		printf("%lld %d %s\n", time, id, s);
+	pthread_mutex_unlock(&philo->table->print_mutex);
 }
 
 time_t	get_ms_time()
 {
 	struct timeval	tv;
+	long long		ms;
 
 	gettimeofday(&tv, NULL);
-	return (tv.tv_sec * 1000L + tv.tv_usec / 1000);
+	ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
+	return (ms);
 	/*
 		1 -> 1000ms + to avoid of losing ms
 	*/
