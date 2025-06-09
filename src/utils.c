@@ -1,12 +1,20 @@
 #include "philo.h"
 
+// void	safe_print(t_table *table, int id, const char *s, long time)
+// {
+// 	pthread_mutex_lock(&table->print_mutex);
+// 	if (!is_someone_dead(table))
+// 	{
+// 		printf("%ld %d %s\n", time, id, s);
+// 	}
+// 	pthread_mutex_unlock(&table->print_mutex);
+// }
+
 void	safe_print(t_table *table, int id, const char *s, long time)
 {
 	pthread_mutex_lock(&table->print_mutex);
 	if (!is_someone_dead(table))
-	{
 		printf("%ld %d %s\n", time, id, s);
-	}
 	pthread_mutex_unlock(&table->print_mutex);
 }
 

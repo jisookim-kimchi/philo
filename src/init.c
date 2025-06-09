@@ -16,7 +16,7 @@ t_table *init_table(int ac, char **av)
 	else
 		table->must_eat_counts = -1;
 	table->someone_died = false;
-	table->start_time = 0;
+	table->start_time = get_ms_time();
 	if (init_mutex_flag(table) == -1)
 		return (NULL);
 	return (table);
@@ -85,7 +85,7 @@ t_philo	*init_philo(t_table *table)
 		return (NULL);
 	while (i < num)
 	{
-		table->philos[i].id = i;
+		table->philos[i].id = i + 1;
 		table->philos[i].table = table;
 		table->philos[i].eat_counts = 0;
 		table->philos[i].last_meal_time = get_ms_time();

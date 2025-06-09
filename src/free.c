@@ -8,9 +8,7 @@ void	all_free(t_table *table)
 	if (!table)
 		return ;
 	if (table->philos)
-	{
 		free(table->philos);
-	}
 	if (table->forks)
 	{
 		i = 0;

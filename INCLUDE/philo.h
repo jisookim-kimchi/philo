@@ -18,10 +18,10 @@
 typedef struct s_table
 {
 	int				philo_num;
-	time_t			time_to_die;
-	time_t			time_to_sleep;
-	time_t			time_to_eat;
-	time_t			start_time;
+	long long		time_to_die;
+	long long		time_to_sleep;
+	long long		time_to_eat;
+	long long		start_time;
 	int				must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
@@ -40,7 +40,7 @@ typedef struct s_philo
 {
 	t_table			*table;
 	pthread_t		thread;
-	time_t			last_meal_time;
+	long long		last_meal_time;
 	unsigned int	id;
 	int				eat_counts;
 	int				left_fork;
@@ -71,11 +71,12 @@ void	*philo_single(void *data);
 
 //thread_routine.c
 void	*philo_routine(void *data);
-void	think(t_philo *philo);
+//void	think(t_philo *philo);
 bool	try_take_forks(t_philo *philo);
 void	putdown_forks(t_philo *philo);
 void	eat(t_philo *philo);
 void	philo_sleep(t_philo *philo);
+int		putdown_onefork(pthread_mutex_t *fork1);
 
 //monitor.c
 void	*monitor_routine(void *data);
