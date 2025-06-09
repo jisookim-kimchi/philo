@@ -15,53 +15,29 @@
 
 bool	try_take_forks(t_philo *philo)
 {
-	int	left_fork_num = philo->id;
-	int	right_fork_num;
 	t_table *table = philo->table;
 
-	left_fork_num = philo->id;
-	right_fork_num = (philo->id) % philo->table->philo_num;
-
-	if (is_someone_dead(philo))
+	if (should_stop(philo))
         return (false);
 	if (philo->right_fork == philo->left_fork)
 	{
 		safe_print(philo, philo->id, "has taken right fork", get_ms_time() - table->start_time);
 		return false;
 	}
-	if (left_fork_num < right_fork_num)
+
+	pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
+	safe_print(philo, philo->id, "has taken a fork", get_ms_time() - table->start_time);
+	if (is_someone_dead(philo))
 	{
-		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
-		if (is_someone_dead(philo))
-		{
-			safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
-			return putdown_onefork(&philo->table->forks[philo->left_fork]);
-		}
-		safe_print(philo, philo->id, "has taken the left fork", get_ms_time() - table->start_time);
-		pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
-		if (is_someone_dead(philo))
-		{
-			safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
-			return putdown_onefork(&philo->table->forks[philo->right_fork]);
-		}
-		safe_print(philo, philo->id, "has taken the right fork",  get_ms_time() - table->start_time);
+		safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
+		return putdown_onefork(&philo->table->forks[philo->left_fork]);
 	}
-	else
+	pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
+	safe_print(philo, philo->id, "has taken a fork", get_ms_time() - table->start_time);
+	if (is_someone_dead(philo))
 	{
-		pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
-		if (is_someone_dead(philo))
-		{
-			safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
-			return putdown_onefork(&philo->table->forks[philo->right_fork]);
-		}
-		safe_print(philo, philo->id, "has taken the right fork",  get_ms_time() - table->start_time);
-		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
-		if (is_someone_dead(philo))
-		{
-			safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
-			return putdown_onefork(&philo->table->forks[philo->left_fork]);
-		}
-		safe_print(philo, philo->id, "has taken the left fork", get_ms_time() - table->start_time);
+		safe_print(philo, philo->id, RED"philo said someone died"DEFAULT,  get_ms_time() - table->start_time);
+		return putdown_onefork(&philo->table->forks[philo->right_fork]);
 	}
 	return (true);
 }
@@ -94,7 +70,6 @@ void	eat(t_philo *philo)
 	pthread_mutex_unlock(&table->eat_mutex);
 	safe_print(philo, philo->id, GREEN"is eating"DEFAULT,  get_ms_time() - table->start_time);
 	blocking_time(table->time_to_eat, table);
-	
 }
 
 void	philo_sleep(t_philo *philo)
