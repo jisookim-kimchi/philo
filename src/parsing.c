@@ -63,8 +63,17 @@ int	ft_atoi(char *str)
 
 bool	is_valid(int ac, char **av)
 {
+	int	i;
+
+	i = 1;
 	if (ac != 5 && ac != 6)
 		return (false);
+	while (av[i])
+	{
+		if(ft_atoi(av[i]) <= 0)
+			return (false);
+		i++;
+	}
 	if (!is_num_args(av + 1))
 		return (false);
 	return (true);

@@ -8,9 +8,7 @@
 int	main(int ac, char **av)
 {
 	t_table	*table;
-	int i;
 
-	i = 0;
 	if (!is_valid(ac, av))
 	{
 		printf(RED"INVALID ARGUMENTS\n"DEFAULT);
@@ -22,12 +20,17 @@ int	main(int ac, char **av)
 		all_free(table);
 		return (-1);
 	}
-	table->start_time = get_ms_time();
-	while (i < table->philo_num)
+	if (!init_philo(table))
 	{
-		table->philos[i].last_meal_time = table->start_time;
-		i++;
+		all_free(table);
+		return -1;
 	}
+	if (init_mutex(table) == -1)
+	{
+		all_free(table);
+		return -1;
+	}
+
 	pthread_create(&table->monitor, NULL, monitor_routine, (void *)table);
 	init_threads(table);
 	pthread_join(table->monitor, NULL);

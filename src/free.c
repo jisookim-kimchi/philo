@@ -9,14 +9,6 @@ void	all_free(t_table *table)
 		return ;
 	if (table->philos)
 	{
-		while(i < table->philo_num)
-		{
-			if (table->philos[i].meal_mutex_flag)
-				pthread_mutex_destroy(&table->philos[i].meal_mutex);
-			if (table->philos[i].state_mutex_flag)
-				pthread_mutex_destroy(&table->philos[i].state_mutex);
-			i++;
-		}
 		free(table->philos);
 	}
 	if (table->forks)
@@ -32,8 +24,8 @@ void	all_free(t_table *table)
 	}
 	if (table->forks_mutex_flag)
 		free(table->forks_mutex_flag);
-	if (table->someone_died_mutex_flag)
-		pthread_mutex_destroy(&table->someone_died_mutex);
+	if (table->shut_down_mutex_flag)
+		pthread_mutex_destroy(&table->shutdown_mutex);
 	if (table->print_mutex_flag)
 		pthread_mutex_destroy(&table->print_mutex);
 	free(table);

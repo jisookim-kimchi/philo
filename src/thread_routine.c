@@ -10,7 +10,6 @@ void	think(t_philo *philo)
 		safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
 		return ;
 	}
-	set_philo_state(philo, THINKING_READY);
 	safe_print(table, philo->id + 1, YELLOW"is thinking"DEFAULT, get_ms_time() - table->start_time);
 }
 
@@ -33,40 +32,38 @@ bool	try_take_forks(t_philo *philo)
 	}
 	if (left_fork_num < right_fork_num)
 	{
-		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
 		if (is_someone_dead(table))
 		{
 			safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
-			pthread_mutex_unlock(philo->left_fork);
+			pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
 			return (false);
 		}
 		safe_print(table, philo->id + 1, "has taken the left fork", get_ms_time() - table->start_time);
-		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
 		if (is_someone_dead(table))
 		{
 			safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
-			pthread_mutex_unlock(philo->left_fork);
-			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
 			return (false);
 		}
 		safe_print(table, philo->id + 1, "has taken the right fork",  get_ms_time() - table->start_time);
 	}
 	else
 	{
-		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&philo->table->forks[philo->right_fork]);
 		if (is_someone_dead(table))
 		{
 			safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
-			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
 			return (false);
 		}
 		safe_print(table, philo->id + 1, "has taken the right fork",  get_ms_time() - table->start_time);
-		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&philo->table->forks[philo->left_fork]);
 		if (is_someone_dead(table))
 		{
 			safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
-			pthread_mutex_unlock(philo->left_fork);
-			pthread_mutex_unlock(philo->right_fork);
+			pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
 			return (false);
 		}
 		safe_print(table, philo->id + 1, "has taken the left fork", get_ms_time() - table->start_time);
@@ -76,8 +73,8 @@ bool	try_take_forks(t_philo *philo)
 
 void	putdown_forks(t_philo *philo)
 {
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(&philo->table->forks[philo->left_fork]);
+	pthread_mutex_unlock(&philo->table->forks[philo->right_fork]);
 }
 
 void	eat(t_philo *philo)
@@ -90,11 +87,10 @@ void	eat(t_philo *philo)
 		safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
 		return;
 	}
-	pthread_mutex_lock(&philo->meal_mutex);
+	pthread_mutex_lock(&table->eat_mutex);
 	philo->last_meal_time = get_ms_time();
 	philo->eat_counts++;
-	pthread_mutex_unlock(&philo->meal_mutex);
-	set_philo_state(philo, EATING_RUNNING);
+	pthread_mutex_unlock(&table->eat_mutex);
 	safe_print(table, philo->id + 1, GREEN"is eating"DEFAULT,  get_ms_time() - table->start_time);
 	blocking_time(table->time_to_eat, table);
 	
@@ -110,7 +106,6 @@ void	philo_sleep(t_philo *philo)
 		safe_print(table, philo->id + 1, RED"philo said someone died\n"DEFAULT,  get_ms_time() - table->start_time);
 		return ;
 	}
-	set_philo_state(philo, SLEEPING_BLOCKED);
 	safe_print(table, philo->id + 1, BLUE"is sleeping"DEFAULT,  get_ms_time() - table->start_time);
 	blocking_time(table->time_to_sleep, table);
 }
@@ -120,9 +115,9 @@ void	*philo_routine(void *data)
 	t_philo *philo = (t_philo *)data;
 	t_table *table = philo->table;
 
-	if (philo->id % 2 == 1)
-		blocking_time(table->time_to_eat * 0.5, table);
-	while (!is_someone_dead(table) && !is_full(philo))
+	if (philo->id % 2 == 0)
+		blocking_time(table->time_to_eat * 1, table);
+	while (1)
 	{
 		if (!try_take_forks(philo))
 		{

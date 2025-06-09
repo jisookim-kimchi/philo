@@ -3,47 +3,11 @@
 t_table *init_table(int ac, char **av)
 {
 	t_table			*table;
-	int	i;
 
-	i = 0;
 	table = malloc(sizeof(t_table));
 	if (!table)
 		return (NULL);
 	table->philo_num = ft_atoi(av[1]);
-	table->forks_mutex_flag = malloc(sizeof(bool) * table->philo_num);
-	if (!table->forks_mutex_flag)
-		return (NULL);
-	table->print_mutex_flag = false;
-	table->someone_died_mutex_flag = false;
-	if (pthread_mutex_init(&table->print_mutex, NULL) != 0)
-	{
-		table->print_mutex_flag = false;
-		return (NULL);
-	}
-	else
-		table->print_mutex_flag = true;
-	if (pthread_mutex_init(&table->someone_died_mutex, NULL) != 0)
-	{
-		table->someone_died_mutex_flag = false;
-		return (NULL);
-	}
-	else
-		table->someone_died_mutex_flag = true;
-	table->forks = malloc(sizeof(pthread_mutex_t) * table->philo_num);
-	if (!table->forks)
-		return (NULL);
-	while (i < table->philo_num)
-	{
-		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-		{
-			table->forks_mutex_flag[i] = false;
-			return (NULL);
-		}
-		else
-			table->forks_mutex_flag[i] = true; 
-		i++;
-	}
-	table->someone_died = false;
 	table->time_to_die = ft_atoi(av[2]);
 	table->time_to_eat = ft_atoi(av[3]);
 	table->time_to_sleep = ft_atoi(av[4]);
@@ -51,10 +15,61 @@ t_table *init_table(int ac, char **av)
 		table->must_eat_counts = ft_atoi(av[5]);
 	else
 		table->must_eat_counts = -1;
-	table->philos = init_philo(table);
-	if (!table->philos)
+	table->someone_died = false;
+	table->start_time = 0;
+	if (init_mutex_flag(table) == -1)
 		return (NULL);
 	return (table);
+}
+
+int		init_mutex_flag(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	table->forks_mutex_flag = malloc(sizeof(bool) * table->philo_num);
+	if (!table->forks_mutex_flag)
+		return (-1);
+	while (i < table->philo_num)
+	{
+		table->forks_mutex_flag[i] = false;
+		i++;
+	}
+	table->print_mutex_flag = false;
+	table->shut_down_mutex_flag = false;
+	table->print_mutex_flag = false;
+	table->eat_mutex_flag = false;
+	return (1);
+}
+
+int		init_mutex(t_table *table)
+{
+	int i;
+
+	i = 0;
+	while (i < table->philo_num)
+	{
+		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
+			return (-1);
+		else
+			table->forks_mutex_flag[i] = true; 
+		i++;
+	}
+	if (pthread_mutex_init(&table->print_mutex, NULL) != 0)
+		return (-1);
+	else
+		table->print_mutex_flag = true;
+
+	if (pthread_mutex_init(&table->shutdown_mutex, NULL) != 0)
+		return (-1);
+	else
+		table->shut_down_mutex_flag = true;
+
+	if (pthread_mutex_init(&table->eat_mutex, NULL) != 0)
+		return (-1);
+	else
+		table->eat_mutex_flag = true;
+	return (1);
 }
 
 t_philo	*init_philo(t_table *table)
@@ -64,35 +79,21 @@ t_philo	*init_philo(t_table *table)
 
 	i = 0;
 	num = table->philo_num;
-	t_philo *philos = malloc(sizeof(t_philo) * num);
-	if (!philos)
+	table->philos = malloc(sizeof(t_philo) * num);
+	table->forks = malloc(sizeof(pthread_mutex_t) * num);
+	if (!table->philos || !table->forks)
 		return (NULL);
 	while (i < num)
 	{
-		philos[i].id = i;
-		philos[i].table = table;
-		philos[i].eat_counts = 0;
-		philos[i].last_meal_time = 0;
-		if (pthread_mutex_init(&philos[i].meal_mutex, NULL) != 0)
-		{
-			philos[i].meal_mutex_flag = false;
-			return (NULL);
-		}
-		else
-			philos[i].meal_mutex_flag = true;
-		if (pthread_mutex_init(&philos[i].state_mutex, NULL) != 0)
-		{
-			philos[i].state_mutex_flag = false;
-			return (NULL);
-		}
-		else
-			philos[i].state_mutex_flag = true;
-		philos[i].left_fork = &table->forks[i];
-		philos[i].right_fork = &table->forks[(i + 1) % num];
-		philos[i].state = THINKING_READY;
+		table->philos[i].id = i;
+		table->philos[i].table = table;
+		table->philos[i].eat_counts = 0;
+		table->philos[i].last_meal_time = get_ms_time();
+		table->philos[i].left_fork = i;
+		table->philos[i].right_fork = (i + 1) % table->philo_num;
 		i++;
 	}
-	return philos;
+	return table->philos;
 }
 
 void	init_threads(t_table *table)

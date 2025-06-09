@@ -15,14 +15,6 @@
 #define	INT_MAX	2147483647
 #define INT_MIN	-2147483648
 
-typedef enum e_state
-{
-	THINKING_READY,
-	HUNGRY,
-	EATING_RUNNING,
-	SLEEPING_BLOCKED,
-}	t_state;
-
 typedef struct s_table
 {
 	int				philo_num;
@@ -30,16 +22,18 @@ typedef struct s_table
 	time_t			time_to_sleep;
 	time_t			time_to_eat;
 	time_t			start_time;
-	pthread_mutex_t	*forks;
-	pthread_mutex_t	print_mutex;
-	pthread_mutex_t someone_died_mutex;
 	int				must_eat_counts;
 	bool			someone_died;
 	struct s_philo	*philos;
-	pthread_t		monitor;
+	pthread_mutex_t	*forks;
+	pthread_mutex_t	print_mutex;
+	pthread_mutex_t shutdown_mutex;
+	pthread_mutex_t eat_mutex;
+	bool			eat_mutex_flag;
 	bool			print_mutex_flag;
-	bool			someone_died_mutex_flag;
+	bool			shut_down_mutex_flag;
 	bool			*forks_mutex_flag;
+	pthread_t		monitor;
 }	t_table;
 
 typedef struct s_philo
@@ -49,13 +43,8 @@ typedef struct s_philo
 	time_t			last_meal_time;
 	unsigned int	id;
 	int				eat_counts;
-	t_state			state;
-	pthread_mutex_t	*left_fork;
-	pthread_mutex_t	*right_fork;
-	pthread_mutex_t	meal_mutex;
-	pthread_mutex_t state_mutex;
-	bool			meal_mutex_flag;
-	bool			state_mutex_flag;
+	int				left_fork;
+	int				right_fork;
 }	t_philo;
 
 //main.c
@@ -64,6 +53,9 @@ int	main(int ac, char **av);
 //init.c
 t_table *init_table(int ac, char **av);
 t_philo	*init_philo(t_table *table);
+int		init_mutex(t_table *table);
+int		init_mutex_flag(t_table *table);
+
 void	init_threads(t_table *table);
 void	join_threads(t_table *table);
 
@@ -71,8 +63,8 @@ void	join_threads(t_table *table);
 void	blocking_time(time_t ms, t_table *table);
 time_t	get_ms_time();
 void	safe_print(t_table *table, int id, const char *s, long time);
-t_state	get_philo_state(t_philo *philo);
-void	set_philo_state (t_philo *philo, t_state state);
+// t_state	get_philo_state(t_philo *philo);
+// void	set_philo_state (t_philo *philo, t_state state);
 
 //philo_single.c
 void	*philo_single(void *data);
