@@ -52,6 +52,7 @@ void	safe_print(t_philo *philo, int id, const char *str, long long time)
 // 	//pthread_mutex_unlock(&philo->table->print_mutex);
 // }
 
+//1 -> 1000ms + to avoid of losing ms
 long long	get_ms_time()
 {
 	struct timeval	tv;
@@ -60,9 +61,7 @@ long long	get_ms_time()
 	gettimeofday(&tv, NULL);
 	ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	return (ms);
-	/*
-		1 -> 1000ms + to avoid of losing ms
-	*/
+
 }
 
 //Accurate thread blocking for a given time
