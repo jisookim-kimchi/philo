@@ -25,14 +25,13 @@ void	write_longlong(long long data)
 
 void	safe_print(t_philo *philo, int id, const char *str, long long time)
 {
-	pthread_mutex_lock(&philo->table->shutdown_mutex);
-	if (philo->table->someone_died)
-	{
-		printf(RED"died\n"DEFAULT);
-		pthread_mutex_unlock(&philo->table->shutdown_mutex);
-		return;
-	}
-	pthread_mutex_unlock(&philo->table->shutdown_mutex);
+	// pthread_mutex_lock(&philo->table->shutdown_mutex);
+	// if (philo->table->someone_died)
+	// {
+	// 	pthread_mutex_unlock(&philo->table->shutdown_mutex);
+	// 	return;
+	// }
+	// pthread_mutex_unlock(&philo->table->shutdown_mutex);
 
 	pthread_mutex_lock(&philo->table->print_mutex);
 	write_longlong(time);

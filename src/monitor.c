@@ -10,8 +10,7 @@ bool	is_someone_dead(t_philo *philo)
 	died = table->someone_died;
 	if (!died && get_ms_time() - philo->last_meal_time >= table->time_to_die)
 	{
-		//printf(RED"%d, died\n"DEFAULT, philo->id);
-		safe_print(philo,philo->id,"died",get_ms_time() - philo->last_meal_time);
+		safe_print(philo,philo->id,"died",get_ms_time() - philo->table->start_time);
 		pthread_mutex_lock(&table->shutdown_mutex);
 		table->someone_died = true;
 		pthread_mutex_unlock(&table->shutdown_mutex);
