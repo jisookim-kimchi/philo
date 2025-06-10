@@ -2,19 +2,23 @@
 
 bool	is_someone_dead(t_philo *philo)
 {
-	bool	check;
+	bool	died;
 	t_table *table;
 
 	table = philo->table;
-	check = false;
-	if (get_ms_time() - philo->last_meal_time >= table->time_to_die)
+	pthread_mutex_lock(&table->eat_mutex);
+	died = table->someone_died;
+	if (!died && get_ms_time() - philo->last_meal_time >= table->time_to_die)
 	{
+		//printf(RED"%d, died\n"DEFAULT, philo->id);
+		safe_print(philo,philo->id,"died",get_ms_time() - philo->last_meal_time);
 		pthread_mutex_lock(&table->shutdown_mutex);
-		check = table->someone_died;
-		safe_print(philo, philo->id, "died\n", get_ms_time()-table->start_time);
+		table->someone_died = true;
 		pthread_mutex_unlock(&table->shutdown_mutex);
+		died = true;
 	}
-	return (check);
+	pthread_mutex_unlock(&table->eat_mutex);
+	return (died);
 }
 
 bool	is_full(t_philo *philo)
@@ -42,16 +46,16 @@ int	check_stuffed_cnts(t_table *table)
 
 	if (table->must_eat_counts == -1)
 		return (0);
+	pthread_mutex_lock(&table->eat_mutex);
 	while (i < table->philo_num)
 	{
-		pthread_mutex_lock(&table->eat_mutex);
 		if (table->philos[i].eat_counts >= table->must_eat_counts)
 		{
 			stuffed_cnts++;
 		}
-		pthread_mutex_unlock(&table->eat_mutex);
 		i++;
 	}
+	pthread_mutex_unlock(&table->eat_mutex);
 	return (stuffed_cnts);
 }
 
@@ -61,7 +65,7 @@ int	should_stop(t_philo *philo)
 		return 1;
 	else if (is_full(philo) == true)
 		return 1;
-	else if (check_stuffed_cnts(philo->table))
+	else if (check_stuffed_cnts(philo->table) == philo->table->philo_num)
 		return 1;
 	return 0;
 }

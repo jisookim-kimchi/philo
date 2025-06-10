@@ -3,7 +3,7 @@ OBJ_DIR := obj
 INCLUDE_DIR := INCLUDE
 
 CC := cc
-CFLAGS := -g -O1 -O2  -Wall -Werror -Wextra  -I$(INCLUDE_DIR) #-fsanitize=thread#-fsanitize=address #-fsanitize=thread -pthread  # 
+CFLAGS := -g -O1 -O2  -Wall -Werror -Wextra  -I$(INCLUDE_DIR) #-fsanitize=thread #-fsanitize=address #-fsanitize=thread -pthread  # 
 
 TARGET := philo
 

@@ -117,6 +117,8 @@ void	init_threads(t_table *table)
 	}
 	while (i < table->philo_num)
 	{
+		if (i % 2 == 0)
+      		usleep(1000);
 		result = pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
 		if (result)
 		{

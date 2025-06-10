@@ -1,24 +1,59 @@
 #include "philo.h"
 
-// void	safe_print(t_table *table, int id, const char *s, long time)
-// {
-// 	pthread_mutex_lock(&table->print_mutex);
-// 	if (!is_someone_dead(table))
-// 	{
-// 		printf("%ld %d %s\n", time, id, s);
-// 	}
-// 	pthread_mutex_unlock(&table->print_mutex);
-// }
-
-void	safe_print(t_philo *philo, int id, const char *s, long long time)
+int		ft_strlen(const char *str)
 {
+	int	i;
+
+	i = 0;
+	while(str[i])
+	{
+		i++;
+	}
+	return (i);
+}
+
+void	write_longlong(long long data)
+{
+	char c;
+	if (data >= 10)
+	{
+		write_longlong(data / 10);
+	}
+	c = data % 10 + '0';
+	write(1, &c, 1);
+}
+
+void	safe_print(t_philo *philo, int id, const char *str, long long time)
+{
+	pthread_mutex_lock(&philo->table->shutdown_mutex);
+	if (philo->table->someone_died)
+	{
+		printf(RED"died\n"DEFAULT);
+		pthread_mutex_unlock(&philo->table->shutdown_mutex);
+		return;
+	}
+	pthread_mutex_unlock(&philo->table->shutdown_mutex);
+
 	pthread_mutex_lock(&philo->table->print_mutex);
-	if (!is_someone_dead(philo))
-		printf("%lld %d %s\n", time, id, s);
+	write_longlong(time);
+	write(1, " ", 1);
+	write_longlong(id);
+	write(1, " ", 1);
+	write(1, str, ft_strlen(str));
+	write(1, "\n", 1);
 	pthread_mutex_unlock(&philo->table->print_mutex);
 }
 
-time_t	get_ms_time()
+//printf is internally thread-safe (protected between threads) but not fast
+// void	safe_print(t_philo *philo, int id, const char *s, long long time)
+// {
+// 	//pthread_mutex_lock(&philo->table->print_mutex);
+// 	(void)philo;
+// 	printf("%lld %d %s\n", time, id, s);
+// 	//pthread_mutex_unlock(&philo->table->print_mutex);
+// }
+
+long long	get_ms_time()
 {
 	struct timeval	tv;
 	long long		ms;
@@ -32,36 +67,17 @@ time_t	get_ms_time()
 }
 
 //Accurate thread blocking for a given time
-void	blocking_time(time_t ms, t_table *table)
+void	blocking_time(time_t ms, t_philo *philo)
 {
 	time_t	start;
 
-	(void)table;
 	start = get_ms_time();
 	while (get_ms_time() - start < ms)
 	{
-		// if (is_someone_dead(table))
-		// {
-		//  	printf(RED"someone died\n"DEFAULT);
-		//  	return;
-		// }
+		if (is_someone_dead(philo))
+		{
+		 	return;
+		}
 		usleep(200);
 	}
 }
-
-// void	set_philo_state (t_philo *philo, t_state state)
-// {
-// 	pthread_mutex_lock(&philo->state_mutex);
-// 	philo->state = state;
-// 	pthread_mutex_unlock(&philo->state_mutex);
-// }
-
-// t_state	get_philo_state(t_philo *philo)
-// {
-// 	t_state	state;
-
-// 	pthread_mutex_lock(&philo->state_mutex);
-// 	state = philo->state;
-// 	pthread_mutex_unlock(&philo->state_mutex);
-// 	return (state);
-// }
