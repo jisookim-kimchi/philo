@@ -36,13 +36,13 @@ int		init_mutex_flag(t_table *table)
 	}
 	table->print_mutex_flag = false;
 	table->shut_down_mutex_flag = false;
-	table->print_mutex_flag = false;
 	table->eat_mutex_flag = false;
+	table->monitor_flag = false;
 	table->monitor_flag = false;
 	return (1);
 }
 
-int		init_mutex(t_table *table)
+static int init_fork_mutex(t_table *table)
 {
 	int i;
 
@@ -50,26 +50,30 @@ int		init_mutex(t_table *table)
 	while (i < table->philo_num)
 	{
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
-			return (-1);
+			return (1);
 		else
 			table->forks_mutex_flag[i] = true; 
 		i++;
 	}
+	return (0);
+}
+
+int		init_mutex(t_table *table)
+{
+	if (init_fork_mutex(table) != 0)
+		return (-1);
 	if (pthread_mutex_init(&table->print_mutex, NULL) != 0)
 		return (-1);
 	else
 		table->print_mutex_flag = true;
-
 	if (pthread_mutex_init(&table->shutdown_mutex, NULL) != 0)
 		return (-1);
 	else
 		table->shut_down_mutex_flag = true;
-
 	if (pthread_mutex_init(&table->eat_mutex, NULL) != 0)
 		return (-1);
 	else
 		table->eat_mutex_flag = true;
-
 	if (pthread_mutex_init(&table->monitor, NULL) != 0)
 		return (-1);
 	else
@@ -102,19 +106,66 @@ t_philo	*init_philo(t_table *table)
 	return table->philos;
 }
 
-void	init_threads(t_table *table)
+// void	init_threads(t_table *table)
+// {
+// 	int	i;
+// 	int	result;
+
+// 	i = 0;
+// 	if (table->philo_num == 1)
+// 	{
+// 		result = pthread_create(&table->philos[i].thread, NULL, philo_single, (void *)&table->philos[i]);
+// 		if (result)
+// 			pthread_join(table->philos[i].thread, NULL);
+// 		return ;
+// 	}
+// 	while (i < table->philo_num)
+// 	{
+// 		if (i % 2 == 0)
+//       		usleep(1000);
+// 		result = pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
+// 		if (result)
+// 		{
+// 			while (--i >= 0)
+// 				pthread_join(table->philos[i].thread, NULL);
+// 			break;
+// 		}
+// 		i++;
+// 	}
+// }
+
+static	int	init_single_thread(t_table *table)
+{
+	int	check;
+
+	check = 0;
+	if (!table)
+		return (-1);
+	
+	if (table->philo_num == 1)
+	{
+		check = pthread_create(&table->philos[0].thread, NULL, philo_single, (void *)&table->philos[0]);
+		if (check)
+		{
+			pthread_join(table->philos[0].thread, NULL);
+			return (-1);
+		}
+		return (1);
+	}
+	return (0);
+}
+
+int	init_threads(t_table *table)
 {
 	int	i;
 	int	result;
 
 	i = 0;
-	if (table->philo_num == 1)
-	{
-		result = pthread_create(&table->philos[i].thread, NULL, philo_single, (void *)&table->philos[i]);
-		if (result)
-			pthread_join(table->philos[i].thread, NULL);
-		return ;
-	}
+	result = init_single_thread(table);
+	if (result == -1)
+		return (-1);
+	else if (result == 1)
+		return (1);
 	while (i < table->philo_num)
 	{
 		if (i % 2 == 0)
@@ -123,13 +174,12 @@ void	init_threads(t_table *table)
 		if (result)
 		{
 			while (--i >= 0)
-			{
 				pthread_join(table->philos[i].thread, NULL);
-			}
-			break;
+			return (-1);
 		}
 		i++;
 	}
+	return (1);
 }
 
 void	join_threads(t_table *table)

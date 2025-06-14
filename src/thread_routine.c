@@ -6,44 +6,56 @@
 	// long long after_second = get_ms_time();
 	// safe_print(philo, philo->id, "[DEBUG] second fork locked, delay", after_second - start_time);
 
+
+static void	set_fork_order(t_philo *philo, int *first, int *second)
+{
+	if (philo->left_fork < philo->right_fork)
+	{
+		*first = philo->left_fork;
+		*second = philo->right_fork;
+	}
+	else
+	{
+		*first = philo->right_fork;
+		*second = philo->left_fork;
+	}
+}
+
+static bool take_fork(t_philo *philo, int fork_idx, const char* msg)
+{
+	pthread_mutex_lock(&philo->table->forks[fork_idx]);
+	if(is_someone_dead(philo))
+	{
+		putdown_onefork(&philo->table->forks[fork_idx]);
+		return (false);
+	}
+	safe_print(philo, philo->id, msg, get_ms_time() - philo->table->start_time);
+	return (true);
+}
+
 bool	try_take_forks(t_philo *philo)
 {
 	t_table *table = philo->table;
 	int	first;
 	int	second;
+
+	first = 0;
+	second = 0;
 	if (should_stop(philo))
         return (false);
 	if (philo->right_fork == philo->left_fork)
 	{
 		safe_print(philo, philo->id, "has taken right fork", get_ms_time() - table->start_time);
-		return false;
+		return (false);
 	}
-	if (philo->left_fork < philo->right_fork)
-	{
-		first = philo->left_fork;
-		second = philo->right_fork;
-	}
-	else
-	{
-		first = philo->right_fork;
-		second = philo->left_fork;
-	}
-	pthread_mutex_lock(&table->forks[first]);
-	
-	if (is_someone_dead(philo))
+	set_fork_order(philo, &first, &second);
+	if (take_fork(philo, first, "has taken first fork") == false)
+		return (false);
+	if (take_fork(philo, second, "has taken first fork") == false)
 	{
 		putdown_onefork(&philo->table->forks[first]);
-		return false;
+		return (false);
 	}
-	safe_print(philo, philo->id, "has taken first fork", get_ms_time() - table->start_time);
-	pthread_mutex_lock(&table->forks[second]);
-	
-	if (is_someone_dead(philo))
-	{
-		putdown_forks(philo);
-		return false;
-	}
-	safe_print(philo, philo->id, "has taken second fork", get_ms_time() - table->start_time);
 	return (true);
 }
 
@@ -92,19 +104,10 @@ void	*philo_routine(void *data)
 
 	if (philo->id % 2 == 1)
 		blocking_time(table->time_to_eat * 1, philo);
-	while (1)
+	while (!is_someone_dead(philo) && !is_full(philo))
 	{
-		if (is_someone_dead(philo))
-        	break;
 		if (!try_take_forks(philo))
-		{
 			continue;
-		}
-		if (is_someone_dead(philo))
-		{
-			putdown_forks(philo);
-			break;
-		}
 		eat(philo);
 		if (is_full(philo))
 		{

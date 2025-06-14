@@ -58,7 +58,8 @@ t_philo	*init_philo(t_table *table);
 int		init_mutex(t_table *table);
 int		init_mutex_flag(t_table *table);
 
-void	init_threads(t_table *table);
+// void	init_threads(t_table *table);
+int		init_threads(t_table *table);
 void	join_threads(t_table *table);
 
 //utils.c

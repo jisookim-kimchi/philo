@@ -1,5 +1,21 @@
 # include "philo.h"
 
+static void	mutex_flag_free(t_table *table)
+{
+	if (!table)
+		return ;
+	if (table->forks_mutex_flag)
+		free(table->forks_mutex_flag);
+	if (table->shut_down_mutex_flag)
+		pthread_mutex_destroy(&table->shutdown_mutex);
+	if (table->print_mutex_flag)
+		pthread_mutex_destroy(&table->print_mutex);
+	if (table->monitor_flag)
+		pthread_mutex_destroy(&table->monitor);
+	if (table->eat_mutex_flag)
+		pthread_mutex_destroy(&table->eat_mutex);
+}
+
 void	all_free(t_table *table)
 {
 	int	i;
@@ -20,13 +36,6 @@ void	all_free(t_table *table)
 		}
 		free(table->forks);
 	}
-	if (table->forks_mutex_flag)
-		free(table->forks_mutex_flag);
-	if (table->shut_down_mutex_flag)
-		pthread_mutex_destroy(&table->shutdown_mutex);
-	if (table->print_mutex_flag)
-		pthread_mutex_destroy(&table->print_mutex);
-	if (table->monitor_flag)
-		pthread_mutex_destroy(&table->monitor);
+	mutex_flag_free(table);
 	free(table);
 }
