@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/22 14:35:22 by jisokim2          #+#    #+#             */
+/*   Updated: 2025/06/22 14:43:30 by jisokim2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 /*
@@ -25,13 +37,13 @@ int	main(int ac, char **av)
 	}
 	table = init_table(ac, av);
 	if (!table)
-		return error_print(NULL, "TABLE INIT FAIL"), -1;
+		return (error_print(NULL, "TABLE INIT FAIL"), -1);
 	if (!init_philo(table))
-		return error_print(NULL, "PHILO INIT FAIL"), -1;
+		return (error_print(NULL, "PHILO INIT FAIL"), -1);
 	if (init_mutex(table) == -1)
-		return error_print(NULL, "MUTEX INIT FAIL"), -1;
+		return (error_print(NULL, "MUTEX INIT FAIL"), -1);
 	if (init_threads(table) == -1)
-		return error_print(NULL, "THREAD INIT FAIL"), -1;
+		return (error_print(NULL, "THREAD INIT FAIL"), -1);
 	join_threads(table);
 	all_free(table);
 	return (0);

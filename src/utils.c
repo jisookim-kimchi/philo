@@ -1,11 +1,23 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/22 14:35:47 by jisokim2          #+#    #+#             */
+/*   Updated: 2025/06/22 14:53:54 by jisokim2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
-int		ft_strlen(const char *str)
+int	ft_strlen(const char *str)
 {
 	int	i;
 
 	i = 0;
-	while(str[i])
+	while (str[i])
 	{
 		i++;
 	}
@@ -14,7 +26,8 @@ int		ft_strlen(const char *str)
 
 void	write_longlong(long long data)
 {
-	char c;
+	char	c;
+
 	if (data >= 10)
 	{
 		write_longlong(data / 10);
@@ -25,14 +38,6 @@ void	write_longlong(long long data)
 
 void	safe_print(t_philo *philo, int id, const char *str, long long time)
 {
-	// pthread_mutex_lock(&philo->table->shutdown_mutex);
-	// if (philo->table->someone_died)
-	// {
-	// 	pthread_mutex_unlock(&philo->table->shutdown_mutex);
-	// 	return;
-	// }
-	// pthread_mutex_unlock(&philo->table->shutdown_mutex);
-
 	pthread_mutex_lock(&philo->table->print_mutex);
 	write_longlong(time);
 	write(1, " ", 1);
@@ -53,7 +58,7 @@ void	safe_print(t_philo *philo, int id, const char *str, long long time)
 // }
 
 //1 -> 1000ms + to avoid of losing ms
-long long	get_ms_time()
+long long	get_ms_time(void)
 {
 	struct timeval	tv;
 	long long		ms;
@@ -61,7 +66,6 @@ long long	get_ms_time()
 	gettimeofday(&tv, NULL);
 	ms = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	return (ms);
-
 }
 
 //Accurate thread blocking for a given time
@@ -74,7 +78,7 @@ void	blocking_time(time_t ms, t_philo *philo)
 	{
 		if (is_someone_dead(philo))
 		{
-		 	return;
+			return ;
 		}
 		usleep(200);
 	}

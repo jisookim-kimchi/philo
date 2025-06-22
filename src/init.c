@@ -1,6 +1,18 @@
-# include "philo.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   init.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/22 14:35:16 by jisokim2          #+#    #+#             */
+/*   Updated: 2025/06/22 14:42:30 by jisokim2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-t_table *init_table(int ac, char **av)
+#include "philo.h"
+
+t_table	*init_table(int ac, char **av)
 {
 	t_table			*table;
 
@@ -21,7 +33,7 @@ t_table *init_table(int ac, char **av)
 	return (table);
 }
 
-int		init_mutex_flag(t_table *table)
+int	init_mutex_flag(t_table *table)
 {
 	int	i;
 
@@ -42,9 +54,9 @@ int		init_mutex_flag(t_table *table)
 	return (1);
 }
 
-static int init_fork_mutex(t_table *table)
+static int	init_fork_mutex(t_table *table)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < table->philo_num)
@@ -52,13 +64,13 @@ static int init_fork_mutex(t_table *table)
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
 			return (1);
 		else
-			table->forks_mutex_flag[i] = true; 
+			table->forks_mutex_flag[i] = true;
 		i++;
 	}
 	return (0);
 }
 
-int		init_mutex(t_table *table)
+int	init_mutex(t_table *table)
 {
 	if (init_fork_mutex(table) != 0)
 		return (-1);
@@ -103,7 +115,7 @@ t_philo	*init_philo(t_table *table)
 		table->philos[i].right_fork = (i + 1) % table->philo_num;
 		i++;
 	}
-	return table->philos;
+	return (table->philos);
 }
 
 // void	init_threads(t_table *table)
@@ -134,17 +146,17 @@ t_philo	*init_philo(t_table *table)
 // 	}
 // }
 
-static	int	init_single_thread(t_table *table)
+static int	init_single_thread(t_table *table)
 {
 	int	check;
 
 	check = 0;
 	if (!table)
 		return (-1);
-	
 	if (table->philo_num == 1)
 	{
-		check = pthread_create(&table->philos[0].thread, NULL, philo_single, (void *)&table->philos[0]);
+		check = pthread_create(&table->philos[0].thread,
+				NULL, philo_single, (void *)&table->philos[0]);
 		if (check)
 		{
 			pthread_join(table->philos[0].thread, NULL);
@@ -169,8 +181,9 @@ int	init_threads(t_table *table)
 	while (i < table->philo_num)
 	{
 		if (i % 2 == 0)
-      		usleep(1000);
-		result = pthread_create(&table->philos[i].thread, NULL, philo_routine, (void *)&table->philos[i]);
+			usleep(1000);
+		result = pthread_create(&table->philos[i].thread, NULL,
+				philo_routine, (void *)&table->philos[i]);
 		if (result)
 		{
 			while (--i >= 0)

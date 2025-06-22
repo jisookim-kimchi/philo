@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parsing.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/22 14:35:33 by jisokim2          #+#    #+#             */
+/*   Updated: 2025/06/22 14:45:31 by jisokim2         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "philo.h"
 
 static bool	ft_isspace(char c)
@@ -70,7 +82,7 @@ bool	is_valid(int ac, char **av)
 		return (false);
 	while (av[i])
 	{
-		if(ft_atoi(av[i]) <= 0)
+		if (ft_atoi(av[i]) <= 0)
 			return (false);
 		i++;
 	}
