@@ -6,7 +6,7 @@
 /*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 14:35:44 by jisokim2          #+#    #+#             */
-/*   Updated: 2025/06/22 14:52:13 by jisokim2         ###   ########.fr       */
+/*   Updated: 2025/06/22 14:56:17 by jisokim2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,14 @@ bool	try_take_forks(t_philo *philo)
 		return (false);
 	if (philo->right_fork == philo->left_fork)
 	{
-		safe_print(philo, philo->id, "has taken right fork",
+		safe_print(philo, philo->id, "has taken first fork",
 			get_ms_time() - table->start_time);
 		return (false);
 	}
 	set_fork_order(philo, &first, &second);
 	if (take_fork(philo, first, "has taken first fork") == false)
 		return (false);
-	if (take_fork(philo, second, "has taken first fork") == false)
+	if (take_fork(philo, second, "has taken second fork") == false)
 	{
 		putdown_onefork(&philo->table->forks[first]);
 		return (false);
