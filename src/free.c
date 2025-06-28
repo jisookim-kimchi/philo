@@ -6,11 +6,23 @@
 /*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 14:35:09 by jisokim2          #+#    #+#             */
-/*   Updated: 2025/06/22 14:38:56 by jisokim2         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:15:21 by jisokim2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	join_threads(t_table *table)
+{
+	int	i;
+
+	i = 0;
+	while (i < table->philo_num)
+	{
+		pthread_join(table->philos[i].thread, NULL);
+		i++;
+	}
+}
 
 static void	mutex_flag_free(t_table *table)
 {

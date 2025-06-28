@@ -6,7 +6,7 @@
 /*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 14:35:02 by jisokim2          #+#    #+#             */
-/*   Updated: 2025/06/22 14:38:23 by jisokim2         ###   ########.fr       */
+/*   Updated: 2025/06/28 15:22:28 by jisokim2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,8 +59,6 @@ typedef struct s_philo
 	int				left_fork;
 	int				right_fork;
 }	t_philo;
-// //main.c
-// int	main(int ac, char **av);
 
 //init.c
 t_table		*init_table(int ac, char **av);
@@ -70,7 +68,7 @@ int			init_mutex_flag(t_table *table);
 
 // void	init_threads(t_table *table);
 int			init_threads(t_table *table);
-void		join_threads(t_table *table);
+int			init_single_thread(t_table *table);
 
 //utils.c
 void		blocking_time(time_t ms, t_philo *philo);
@@ -84,11 +82,14 @@ void		*philo_single(void *data);
 
 //thread_routine.c
 void		*philo_routine(void *data);
-//void	think(t_philo *philo);
 bool		try_take_forks(t_philo *philo);
-void		putdown_forks(t_philo *philo);
 void		eat(t_philo *philo);
 void		philo_sleep(t_philo *philo);
+
+//thread_routine_helper.c
+void		set_fork_order(t_philo *philo, int *first, int *second);
+bool		take_fork(t_philo *philo, int fork_idx, const char *msg);
+void		putdown_forks(t_philo *philo);
 void		putdown_onefork(pthread_mutex_t *fork1);
 
 //monitor.c
@@ -103,3 +104,4 @@ int			ft_atoi(char *str);
 
 //free.c
 void		all_free(t_table *table);
+void		join_threads(t_table *table);
