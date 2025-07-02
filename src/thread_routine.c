@@ -6,7 +6,7 @@
 /*   By: jisokim2 <jisokim2@student.42heilbronn.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/22 14:35:44 by jisokim2          #+#    #+#             */
-/*   Updated: 2025/06/28 15:23:20 by jisokim2         ###   ########.fr       */
+/*   Updated: 2025/07/02 13:39:58 by jisokim2         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ bool	try_take_forks(t_philo *philo)
 		return (false);
 	if (philo->right_fork == philo->left_fork)
 	{
-		safe_print(philo, philo->id, "has taken first fork",
+		safe_print(philo, philo->id, "has taken a fork",
 			get_ms_time() - table->start_time);
 		return (false);
 	}
 	set_fork_order(philo, &first, &second);
-	if (take_fork(philo, first, "has taken first fork") == false)
+	if (take_fork(philo, first, "has taken a fork") == false)
 		return (false);
-	if (take_fork(philo, second, "has taken second fork") == false)
+	if (take_fork(philo, second, "has taken a fork") == false)
 	{
 		putdown_onefork(&philo->table->forks[first]);
 		return (false);
@@ -90,7 +90,7 @@ void	*philo_routine(void *data)
 		putdown_forks(philo);
 		philo_sleep(philo);
 		if (!should_stop(philo))
-			safe_print(philo, philo->id, YELLOW"think"DEFAULT,
+			safe_print(philo, philo->id, YELLOW"is thinking"DEFAULT,
 				get_ms_time() - table->start_time);
 	}
 	return (NULL);

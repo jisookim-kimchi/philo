@@ -1,0 +1,15 @@
+{
+	"files.associations": {
+		"philo.h": "c",
+		"locale": "c",
+		"string": "c",
+		"__bit_reference": "c",
+		"algorithm": "c",
+		"bitset": "c",
+		"chrono": "c",
+		"unordered_map": "c",
+		"__locale": "c",
+		"memory": "c",
+		"utility": "c"
+	}
+}
